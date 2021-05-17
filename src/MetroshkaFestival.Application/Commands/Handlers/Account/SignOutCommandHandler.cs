@@ -4,7 +4,7 @@ using Interfaces.Application;
 using MetroshkaFestival.Application.Commands.Records.Account;
 using MetroshkaFestival.Application.Services;
 
-namespace MetroshkaFestival.Application.Commands.Handlers
+namespace MetroshkaFestival.Application.Commands.Handlers.Account
 {
     public class SignOutCommandHandler : ICommandHandler<SignOutCommandRecord, CommandResult>
     {

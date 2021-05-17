@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MetroshkaFestival.Application.Commands.Handlers;
+using MetroshkaFestival.Application.Commands.Handlers.Account;
 using MetroshkaFestival.Application.Commands.Records.Account;
 using MetroshkaFestival.Application.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -13,13 +14,10 @@ namespace MetroshkaFestival.Web.Controllers
     [Route("api/[controller]/[action]")]
     public class AccountController : Controller
     {
-        private readonly UserService _userService;
         private readonly LoggerService _loggerService;
 
-        public AccountController(UserService userService,
-            LoggerService loggerService)
+        public AccountController(LoggerService loggerService)
         {
-            _userService = userService;
             _loggerService = loggerService;
         }
 
@@ -41,9 +39,9 @@ namespace MetroshkaFestival.Web.Controllers
 
             var result = await handler.Handle(commandRecord, ct);
 
-            if (result.ErrorCode != null)
+            if (result.Error != null)
             {
-                ModelState.AddModelError("Login", result.ErrorCode);
+                ModelState.AddModelError("SignIn", result.Error);
                 return LogAndView(commandRecord);
             }
 
@@ -63,7 +61,7 @@ namespace MetroshkaFestival.Web.Controllers
             CancellationToken ct)
         {
             await handler.Handle(commandRecord, ct);
-            return RedirectToAction("SignIn", "Account");
+            return RedirectToAction("Index", "Home");
         }
 
         private IActionResult LogAndView()

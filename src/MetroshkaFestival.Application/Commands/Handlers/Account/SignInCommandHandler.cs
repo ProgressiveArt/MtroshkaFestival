@@ -4,7 +4,7 @@ using Interfaces.Application;
 using MetroshkaFestival.Application.Commands.Records.Account;
 using MetroshkaFestival.Application.Services;
 
-namespace MetroshkaFestival.Application.Commands.Handlers
+namespace MetroshkaFestival.Application.Commands.Handlers.Account
 {
     public class SignInCommandHandler : ICommandHandler<SignInCommandRecord, CommandResult>
     {
@@ -19,7 +19,7 @@ namespace MetroshkaFestival.Application.Commands.Handlers
         {
             var (username, password) = commandRecord;
             var signInErrorCode = await _userService.SignInAsync(username, password, true);
-            return new CommandResult(signInErrorCode);
+            return SignInCommandResult.BuildResult(signInErrorCode);
         }
     }
 }

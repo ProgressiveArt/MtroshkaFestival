@@ -1,0 +1,79 @@
+﻿@model MetroshkaFestival.Application.Queries.Records.Tournaments.TournamentListModel
+@{
+    ViewData["Title"] = "Турниры";
+    ViewData["Controller"] = "Tournament";
+}
+
+@section Header{}
+
+<style>
+    table, tr, td {
+        border: 1px solid black;
+        border-collapse: inherit;
+    }
+</style>
+
+
+<div class="pos-f-t ">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-dark justify-content-start m-0">
+            <li class="invert-color pr-1">Местоположение: </li>
+            <li class=" text-color-link breadcrumb-item active" aria-current="page">
+                <b>Турниры</b>
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<div class="d-flex justify-content-center mt-3 mb-3">
+    <form asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" method="get" class="border border-dark p-1 bg-table">
+        <input class="btn btn-secondary" type="submit" value="Добавить турнир"/>
+    </form>
+</div>
+
+<div class="text-center d-flex justify-content-center">
+    <table class="table table-hover table-dark">
+        <thead>
+        <tr>
+            <th scope="col" width="100px">ID</th>
+            <th scope="col" width="900px">Турниры</th>
+            <th scope="col" width="150px">Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var tournamentModel in Model.Tournaments)
+        {
+            <tr>
+                <th scope="row" class="text-break">@tournamentModel.Id</th>
+                <td>
+                    <div class="card education-card">
+                        <div class="card-body bg-dark">
+                            <h3 class="card-title text-truncate m-0" style="max-width: 900px;"> @tournamentModel.Name</h3>
+                            <h6 class="card-text m-0" style="max-width: 900px;">Сроки проведения: @tournamentModel.StartDate.ToShortDateString() - @tournamentModel.FinishDate.ToShortDateString()</h6>
+                        </div>
+                    </div>
+                </td>
+                <td class="p-1">
+
+
+                    <div class="d-flex flex-column justify-content-between text-center">
+
+                        <div class="dropdown-divider"></div>
+                        <form asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" method="get">
+                            @Html.Hidden("tournamentId", tournamentModel.Id)
+                            <input class="btn btn-outline-success btn-md btn-block" type="submit" value=" • Изменить • "/>
+                        </form>
+
+                        <form asp-area="Admin" asp-controller="Tournament" asp-action="DeleteTournament" method="get">
+                            @Html.Hidden("tournamentId", tournamentModel.Id)
+                            <input class="btn btn-outline-danger btn-md btn-block" type="submit" value=" • Удалить • "/>
+                        </form>
+                    </div>
+
+
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

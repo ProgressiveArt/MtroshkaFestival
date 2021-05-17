@@ -10,4 +10,12 @@ namespace MetroshkaFestival.Application.Commands.Records.Account
         [Required(ErrorMessage = "Не введен пароль")]
         [DataType(DataType.Password)]
         string Password) : ICommand<CommandResult>;
+
+    public sealed class SignInCommandResult : CommandResult
+    {
+        public static CommandResult BuildResult(string error = null)
+        {
+            return error != null ? Failed(error) : Ok();
+        }
+    }
 }

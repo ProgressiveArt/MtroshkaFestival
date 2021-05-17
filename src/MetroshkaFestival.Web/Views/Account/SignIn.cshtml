@@ -18,12 +18,12 @@
                 <input class="form-control bg-dark border-violet" id="PasswordInputId" type="password" placeholder="Введите пароль" asp-for="Password"/>
             </div>
 
+            <div asp-validation-summary="All" class="text-danger form-group row mt-4 text-center"></div>
+
             <div class="form-group row pt-4">
                 <div class="col-2"></div>
                 <input class="btn btn-success col-8" id="SignInButtonId" type="submit" value="Вход"/>
             </div>
-
-            <div asp-validation-summary="All" class="text-danger form-group row mt-4 text-center"></div>
         </form>
     </div>
 </div>

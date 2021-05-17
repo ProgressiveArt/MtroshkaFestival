@@ -9,12 +9,22 @@
         <span class="username">&bull; Пользователь: <b>@Html.GetLogin(User)</b> &bull;</span>
     </div>
 
-    <div class="col-md-2 row p-0 m-0 justify-content-center">
-        <a class="btn btn-danger border border-dark text-center col-lg-8" asp-controller="Account" asp-action="SignOut">Выход</a>
-    </div>
+    @if (Html.GetLogin(User) != "Anonim")
+    {
+        <div class="col-md-2 row p-0 m-0 justify-content-center">
+            <a class="btn btn-danger border border-dark text-center col-lg-8" asp-controller="Account" asp-action="SignOut">Выход</a>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-2 row p-0 m-0 justify-content-center">
+            <a class="btn btn-success border border-dark text-center col-lg-8" asp-controller="Account" asp-action="SignIn">Вход</a>
+        </div>
+    }
+    
 }
 
 @if (Html.GetRole(User) == "Admin")
 {
-    <a class="btn btn-primary">Погнале в админку</a>
+    <a class="btn btn-primary" asp-area="Admin" asp-controller="Tournament" asp-action="Index">Погнале в админку</a>
 }

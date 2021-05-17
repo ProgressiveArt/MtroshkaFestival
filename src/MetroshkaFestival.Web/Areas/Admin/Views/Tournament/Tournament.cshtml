@@ -1,0 +1,86 @@
+﻿@model MetroshkaFestival.Application.Commands.Records.Tournaments.AddOrUpdateTournamentCommandRecord
+@{
+    ViewData["Title"] = Model?.Name;
+    ViewData["Controller"] = "Tournament";
+}
+
+@section Header{}
+
+<div class="pos-f-t ">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-dark justify-content-start m-0">
+            <li class="invert-color pr-1">Местоположение: </li>
+            <li class=" text-color-link breadcrumb-item active" aria-current="page">
+                <b>Турниры</b>
+            </li>
+        </ol>
+    </nav>
+</div>
+
+<form asp-action="AddOrUpdateTournament" method="post" class="container mt-4 col-8 bg-dark rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <div class="text-center p-3">
+        @if (Model?.Id == null)
+        {
+            <span class="h3 invert-color">Добавление турнира</span>
+        }
+        else
+        {
+            <span class="h3 invert-color">Название турнира: @ViewData["Title"]</span>
+        }
+    </div>
+    <input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
+
+    <div class="form-group row">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <input class="form-control bg-dark border-violet" name="Name" type="text" placeholder="Введите название" value="@Model?.Name"/>
+            <span class="invalid-feedback" asp-validation-for="Name"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <input class="form-control bg-dark border-violet" name="StartDate" id="datepicker" type="text" placeholder="Выберите дату начала турнира" value="@Model?.StartDate?.ToShortDateString()"/>
+            <span class="invalid-feedback" asp-validation-for="StartDate"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <input class="form-control bg-dark border-violet" name="FinishDate" id="datepicker2" type="text" placeholder="Выберите дату завершения турнира" value="@Model?.FinishDate?.ToShortDateString()"/>
+            <span class="invalid-feedback" asp-validation-for="FinishDate"></span>
+        </div>
+    </div>
+
+    <div class="form-group row justify-content-center">
+        @if (Model?.Id == null)
+        {
+            <input class="btn btn-success mt-2 col-4" type="submit" value="Добавить"/>
+        }
+        else
+        {
+            <input class="btn btn-success mt-2 col-4" type="submit" value="Обновить"/>
+        }
+    </div>
+
+    <div class="form-group row justify-content-center">
+        <a class="btn btn-danger btn-block col-4 text-center" asp-area="Admin" asp-controller="Tournament" asp-action="Index">Отменить</a>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script>
+    $(function(){
+    	$("#datepicker").datepicker({ dateFormat: 'dd.mm.yy' }).val();
+    });
+    
+    $(function(){
+    	$("#datepicker2").datepicker({ dateFormat: 'dd.mm.yy' }).val();
+    });
+    </script>
+
+    <script src="~/js/checkInvalid.js"></script>
+}
