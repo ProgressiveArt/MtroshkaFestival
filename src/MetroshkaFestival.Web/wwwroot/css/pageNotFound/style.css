@@ -1,0 +1,105 @@
+html {
+    height: 100%;
+    overflow-x: hidden;
+    margin-right: calc(-1 * (100vw - 100%));
+}
+
+body {
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-image: url("");
+    background-attachment: fixed;
+    background-size: cover;
+
+}
+
+main {
+    /* 1 flex-grow, 0 flex-shrink, auto flex-basis */
+    flex: 1 0 auto;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.font-arial {
+    font-family: Arial, serif;
+    font-weight: bold;
+}
+
+.crimson {
+    color: #D22C5E;
+}
+
+.black {
+    color: #393939;
+}
+
+.blue {
+    color: #335aff;
+}
+
+.page-not-found {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 39px;
+    line-height: 50px;
+}
+
+.num404 {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 240px;
+    line-height: 200px;
+}
+
+.not-found-title {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 30px;
+}
+
+.not-found-desc {
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.cause-title {
+    font-size: 20px;
+}
+
+.cause-desc {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 20px;
+}
+
+.help-title {
+    font-size: 20px;
+}
+
+.help-desc {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 17px;
+    line-height: 20px;
+}
+
+.foot-desc {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14.5px;
+    line-height: 22px;
+}
+
+.chan {
+    width: 65vh;
+    height: 80vh;
+}

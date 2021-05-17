@@ -1,0 +1,143 @@
+﻿html {
+    height: 100%;
+    overflow-x: hidden;
+    margin-right: calc(-1 * (100vw - 100%));
+}
+
+body {
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-image: url("../images/elements/background.jpg");
+    background-attachment: fixed;
+    background-size: cover;
+
+}
+
+header {
+    /* 0 flex-grow, 0 flex-shrink, auto flex-basis */
+    flex: 0 0 auto;
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.14)), #121212;
+}
+
+main {
+    /* 1 flex-grow, 0 flex-shrink, auto flex-basis */
+    flex: 1 0 auto;
+}
+
+footer {
+    /* 0 flex-grow, 0 flex-shrink, auto flex-basis */
+    flex: 0 0 auto;
+    width: 100%;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.14)), #121212;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.border-violet {
+    border: 1px solid #BB86FC !important;
+    color: #FFFFFF !important;
+}
+
+
+input[type="text"]::-webkit-input-placeholder, 
+input[type="text"]::-moz-placeholder,
+input[type="password"]::-webkit-input-placeholder, 
+input[type="password"]::-moz-placeholder {
+     color: #888888;
+ }
+
+
+.container {
+    height: 100%;
+}
+
+::-webkit-scrollbar-button {
+    /*background-image:url('');*/
+    /*background-repeat:no-repeat;*/
+    width:5px;
+    height:0px
+}
+
+::-webkit-scrollbar-track {
+    background-color:#121212
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+    background-color: #573d7a;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background-color: #4c316d;
+}
+
+::-webkit-resizer{
+    background-image:url('');
+    background-repeat:no-repeat;
+    width:4px;
+    height:0px
+}
+
+::-webkit-scrollbar{
+    width: 4px;
+}
+
+.text-color-link {
+    color: #BB86FC;
+}
+
+.bg-darker {
+    background-color: rgba(0, 0, 0, 0.4)
+}
+
+.invert-color {
+    filter: invert();
+}
+
+.version {
+    font-family: Roboto Mono;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 24px;
+
+    letter-spacing: 0.1px;
+
+    color: rgba(255, 255, 255, 0.87);
+}
+
+.contacts {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 20px;
+
+    letter-spacing: 0.25px;
+
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.username {
+    font-family: Roboto Mono;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 12px;
+
+    letter-spacing: -0.133333px;
+
+    color: #FFFFFF;
+}
+
+
+
+

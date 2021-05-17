@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>MetroshkaFestival.Application</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Autofac" Version="6.2.0"/>
+        <PackageReference Include="FluentValidation" Version="10.1.0"/>
+        <PackageReference Include="FluentValidation.AspNetCore" Version="10.1.0"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="4.1.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Interfaces\Interfaces.csproj"/>
+        <ProjectReference Include="..\MetroshkaFestival.Data\MetroshkaFestival.Data.csproj"/>
+    </ItemGroup>
+</Project>

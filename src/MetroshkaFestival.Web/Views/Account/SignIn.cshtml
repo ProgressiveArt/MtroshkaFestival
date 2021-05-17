@@ -1,0 +1,34 @@
+@model MetroshkaFestival.Application.Commands.Records.Account.SignInCommandRecord
+@{
+    ViewData["Title"] = "Авторизация";
+}
+
+@section Header{}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <form method="post" asp-controller="Account" asp-action="SignIn" width="50px" class="row col-4 mt-5 pe-5 px-5 bg-dark rounded">
+
+            <div class="form-group row mt-4 text-white justify-content-center">Вход в систему</div>
+            <div class="form-group row mt-4 ">
+                <input class="form-control bg-dark border-violet" id="LoginInputId" type="text" placeholder="Введите логин" asp-for="Username"/>
+            </div>
+
+            <div class="form-group row pt-2">
+                <input class="form-control bg-dark border-violet" id="PasswordInputId" type="password" placeholder="Введите пароль" asp-for="Password"/>
+            </div>
+
+            <div class="form-group row pt-4">
+                <div class="col-2"></div>
+                <input class="btn btn-success col-8" id="SignInButtonId" type="submit" value="Вход"/>
+            </div>
+
+            <div asp-validation-summary="All" class="text-danger form-group row mt-4 text-center"></div>
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/checkInvalid.js"></script>
+}

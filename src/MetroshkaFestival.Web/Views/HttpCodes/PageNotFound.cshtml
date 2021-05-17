@@ -1,0 +1,73 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="~/css/pageNotFound/style.css"/>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <title>404</title>
+</head>
+<body>
+
+<main class="flex-column">
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-8 row">
+            <div class="col-7 flex-column">
+                <div class="font-arial crimson page-not-found text-center mt-4">СТРАНИЦА НЕ НАЙДЕНА</div>
+                <div class="font-arial crimson num404 text-center ">404</div>
+
+                <div class="font-arial crimson not-found-title text-center">НЕТУ ТАКОЙ... ЧЕСТНО... Я ВЕЗДЕ ПОИСКАЛА</div>
+                <div class="font-arial black not-found-desc text-break mt-4">
+                    Простите меня... то, что Вы просили - я не могу найти. Правда-правда.
+                    Не потому, что не искала, а потому, что не нашла. Может быть то, что
+                    Вы попросили найти - вообще не существует... Наверное...
+                </div>
+
+                <div class="font-arial black cause-title mt-4">Возможно, это случилось по одной из этих причин:</div>
+                <ul class="font-arial crimson cause-desc ml-3 mt-4">
+                    <li>
+                        Вы злой человек и заставили меня искать то, чего нет...<br>
+                        <div class="text-secondary">(неправильно набрали URL)</div>
+                    </li>
+                    <li>Ищите то, что было ещё до меня, революции и динозавров...</li>
+                    <li>Вас обманули злые люди и дали нерабтающую ссылку...</li>
+                </ul>
+
+                <div class="font-arial black help-title mt-5">Я действительно хочу Вам помочь... Попробуйте:</div>
+                <ul class="font-arial blue help-desc ml-3 mt-4">
+                    <li>
+                        вернуться назад при помощи кнопки браузера back <br>
+                        <div class="text-secondary">(это такая стрелочка загнутая влево на самом верху)</div>
+                    </li>
+                    <li>ещё раз написать адрес страницы, может ошиблись...</li>
+                    <li>
+                        <a asp-controller="Home" asp-action="Index">
+                            перейти на главную страницу сайта. Там очень хорошо и можно
+                            найти много-много всего интересного...
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-5">
+                <img class="chan" src="~/images/pageNotFound/chan.png" width="100%" alt="">
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-2"></div>
+        <div class="col-8 text-break font-arial black foot-desc">
+            Но если Вы не уверены в правильности набранного адреса страницы и считаете,
+            что это я плохо искала - скажите мне и я буду искать снова и снова и снова.... без отдыха и сна........
+            пока не найду............ И пусть Вас не мучает совесть................
+        </div>
+    </div>
+</main>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
