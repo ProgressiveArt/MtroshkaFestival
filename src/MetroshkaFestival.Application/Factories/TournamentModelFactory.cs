@@ -1,4 +1,4 @@
-﻿using Interfaces.Core;
+﻿using Interfaces.Application;
 using MetroshkaFestival.Application.Queries.Records.Tournaments;
 using MetroshkaFestival.Data.Entities;
 

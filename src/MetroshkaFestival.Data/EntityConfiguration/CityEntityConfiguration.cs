@@ -4,14 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MetroshkaFestival.Data.EntityConfiguration
 {
-    public class TournamentEntityConfiguration : IEntityTypeConfiguration<Tournament>
+    public class CityEntityConfiguration : IEntityTypeConfiguration<City>
     {
-        public void Configure(EntityTypeBuilder<Tournament> entity)
+        public void Configure(EntityTypeBuilder<City> entity)
         {
             entity.Property(x => x.Name)
-                .IsRequired();
-
-            entity.Property("CityId")
                 .IsRequired();
 
             entity.HasIndex(x => x.Name)

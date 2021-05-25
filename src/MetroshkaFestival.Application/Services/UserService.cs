@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Interfaces.Core;
+using Interfaces.Application;
 using MetroshkaFestival.Core.Exceptions.ExceptionCodes;
 using MetroshkaFestival.Data;
 using MetroshkaFestival.Data.Entities;

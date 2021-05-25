@@ -4,17 +4,21 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MetroshkaFestival.Data.EntityConfiguration
 {
-    public sealed class MatchEntityConfiguration : IEntityTypeConfiguration<Match>
+    public class MatchEntityConfiguration : IEntityTypeConfiguration<Match>
     {
         public void Configure(EntityTypeBuilder<Match> entity)
         {
-            entity.HasIndex(x => x.FirstTeamId)
-                .IsUnique();
+            entity.Property("GroupId")
+                .IsRequired();
 
-            entity.HasIndex(x => x.SecondTeamId)
-                .IsUnique();
+            entity.Property("TournamentId")
+                .IsRequired();
 
-            entity.ToTable("Matches");
+            entity.Property("FirstTeamId")
+                .IsRequired();
+
+            entity.Property("SecondTeamId")
+                .IsRequired();
         }
     }
 }

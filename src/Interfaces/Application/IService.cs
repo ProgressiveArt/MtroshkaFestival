@@ -1,4 +1,4 @@
-﻿namespace Interfaces.Core
+﻿namespace Interfaces.Application
 {
     public interface IService
     {

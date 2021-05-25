@@ -1,4 +1,4 @@
-using Interfaces.Core;
+using Interfaces.Application;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 

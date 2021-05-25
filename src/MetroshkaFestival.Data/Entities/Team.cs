@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
-using Interfaces.Core;
+﻿using System;
+using MetroshkaFestival.Core.Models.Common;
 
 namespace MetroshkaFestival.Data.Entities
 {
-    public class Team : IEntity, IIdEntity
+    public class Team
     {
         public int Id { get; set; }
         public string Name { get; set; }
-
-        public ICollection<Player> Players { get; set; } = new List<Player>();
-        public ICollection<Trainer> Trainers { get; set; } = new List<Trainer>();
+        public City City { get; set; }
+        public DateTime Year { get; set; }
+        public TeamStatus TeamStatus { get; set; }
     }
 }

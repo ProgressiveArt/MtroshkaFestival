@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using Autofac;
-using Interfaces.Core;
+using Interfaces.Application;
 
 namespace MetroshkaFestival.Core
 {

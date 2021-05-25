@@ -1,4 +1,4 @@
-﻿using Interfaces.Core;
+﻿using Interfaces.Application;
 
 namespace MetroshkaFestival.Core.WorkContext
 {
