@@ -80,10 +80,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
 
             if (result.Error != null)
             {
-                result.Result = new TournamentListModel
-                {
-                    Query = query
-                };
+                throw new Exception(result.Error);
             }
 
             FillSelected();

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MetroshkaFestival.Application.WebModels.Common
+namespace MetroshkaFestival.Core.Models.Common
 {
     public class SortingModel<TEnumSort>
         where TEnumSort : struct, Enum
