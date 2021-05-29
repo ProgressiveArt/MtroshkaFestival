@@ -146,6 +146,7 @@ namespace MetroshkaFestival.Web
             Seeder.Migrate(serviceProvider);
             Seeder.CreateRoles(serviceProvider).Wait();
             Seeder.CreateSuperUser(serviceProvider).Wait();
+            Seeder.CreateDefaultCities(serviceProvider).Wait();
         }
     }
 }

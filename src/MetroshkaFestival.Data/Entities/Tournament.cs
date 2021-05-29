@@ -10,7 +10,7 @@ namespace MetroshkaFestival.Data.Entities
 
         public int YearOfTour  { get; set; }
         public string Description  { get; set; }
-
+        public bool CanBeRemoved { get; set; } = true;
         public ICollection<Group> Groups { get; set; } = new List<Group>();
 
         [NotMapped] public string Name => $"МЕТРОШКА-{YearOfTour}:{City.Name}";

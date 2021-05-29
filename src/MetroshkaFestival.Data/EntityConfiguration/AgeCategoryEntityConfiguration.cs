@@ -4,16 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace MetroshkaFestival.Data.EntityConfiguration
 {
-    public class TournamentEntityConfiguration : IEntityTypeConfiguration<Tournament>
+    public class AgeCategoryEntityConfiguration : IEntityTypeConfiguration<AgeCategory>
     {
-        public void Configure(EntityTypeBuilder<Tournament> entity)
+        public void Configure(EntityTypeBuilder<AgeCategory> entity)
         {
             entity.Property(x => x.CanBeRemoved)
                 .IsRequired()
                 .HasDefaultValue(true);
-
-            entity.Property("CityId")
-                .IsRequired();
         }
     }
 }

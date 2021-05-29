@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EnumsNET;
+using MetroshkaFestival.Application.Commands.Records.AgeCatehories;
 using MetroshkaFestival.Application.Queries.Models.AgeGroups;
 using MetroshkaFestival.Core.Exceptions.Common;
 using MetroshkaFestival.Core.Models.Common;
@@ -72,14 +73,14 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult GetAddCategoryPage(string returnUrl)
         {
-            var command = new AddAgeCategoryModel(returnUrl);
+            var command = new AddAgeCategoryCommandRecord(returnUrl);
             FillSelected();
             return View("Add", command);
         }
 
         [HttpPost]
         public async Task<ActionResult> AddAgeCategory(
-            [FromForm] AddAgeCategoryModel command, CancellationToken ct)
+            [FromForm] AddAgeCategoryCommandRecord command, CancellationToken ct)
         {
             if (!ModelState.IsValid)
             {
@@ -128,6 +129,11 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
             if (ageCategory == null)
             {
                 throw new HttpResponseException(StatusCodes.Status404NotFound);
+            }
+
+            if (!ageCategory.CanBeRemoved)
+            {
+                throw new Exception("Категорию нельзя удалить");
             }
 
             _dataContext.AgeCategories.Remove(ageCategory);

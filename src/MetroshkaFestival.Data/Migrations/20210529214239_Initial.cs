@@ -15,7 +15,8 @@ namespace MetroshkaFestival.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AgeGroup = table.Column<int>(type: "integer", nullable: false),
-                    RangeOfBirthYears = table.Column<string>(type: "text", nullable: false)
+                    MinBirthDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    MaxBirthDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -283,8 +284,7 @@ namespace MetroshkaFestival.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    IsPlayOff = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    Name = table.Column<int>(type: "integer", nullable: false),
                     AgeCategoryId = table.Column<int>(type: "integer", nullable: false),
                     TournamentId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -355,12 +355,6 @@ namespace MetroshkaFestival.Data.Migrations
                 name: "IX_Groups_AgeCategoryId",
                 table: "Groups",
                 column: "AgeCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Groups_Name",
-                table: "Groups",
-                column: "Name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Groups_TournamentId",

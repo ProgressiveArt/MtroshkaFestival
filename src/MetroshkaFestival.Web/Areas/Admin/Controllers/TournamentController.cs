@@ -59,6 +59,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
                     Name = x.Name,
                     YearOfTour = x.YearOfTour,
                     City = x.City,
+                    CanBeRemoved = x.CanBeRemoved,
                 }).ToArray();
 
                 query.Page.NumPage = Math.Min(query.Page.NumPage, (int) Math.Ceiling((double)tournaments.Length / query.Page.RecordsCountPerPage));
@@ -101,6 +102,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
             var tournament = await _dataContext.Tournaments
                 .Include(x => x.City)
                 .Include(x => x.Groups)
+                .ThenInclude(x => x.AgeCategory)
                 .FirstOrDefaultAsync(x => x.Id == tournamentId);
 
             if (tournament == null)

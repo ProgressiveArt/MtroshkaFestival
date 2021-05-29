@@ -1,4 +1,5 @@
 ﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@using EnumsNET
 @model MetroshkaFestival.Application.Queries.Models.Tournaments.TournamentModel
 @{
     ViewData["Title"] = "Профиль турнира";
@@ -42,20 +43,51 @@
         </div>
     </div>
 </div>
-<ul class="nav nav-tabs nav-fill px-2 mt-2">
-    <li class="nav-item @(ViewBag.TabProfile == "tab0" ? "active" : null)">
-        <form asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" method="get">
-            @Html.Hidden("tournamentId", Model.Id)
-            <input class="nav-link @(ViewBag.TabProfile == "tab0" ? "active" : null)" type="submit" value="Матчи"/>
-        </form>
-    </li>
-    <li class="nav-item @(ViewBag.TabProfile == "tab1" ? "active" : null)">
-        <form asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" method="get">
-            @Html.Hidden("tournamentId", Model.Id)
-            <input class="nav-link @(ViewBag.TabProfile == "tab1" ? "active" : null)" type="submit" value="Команды"/>
-        </form>
-    </li>
-</ul>
+
+<nav>
+    <div class="nav nav-tabs nav-fill px-2 mt-2" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-groups-tab" data-bs-toggle="tab" data-bs-target="#nav-groups" type="button" role="tab" aria-controls="nav-groups" aria-selected="true">Группы</button>
+        <button class="nav-link" id="nav-matches-tab" data-bs-toggle="tab" data-bs-target="#nav-matches" type="button" role="tab" aria-controls="nav-matches" aria-selected="false">Контакт</button>
+    </div>
+</nav>
+
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-groups" role="tabpanel" aria-labelledby="nav-groups-tab">
+
+        <div class="mt-3 mb-2 text-center">
+            <a asp-area="Admin" asp-controller="Group" asp-action="GetAddGroupPage" asp-route-returnUrl="@returnUrl" asp-route-tournamentId="@Model.Id" class="btn btn-secondary">Добавить группу</a>
+        </div>
+
+        <table class="table table-hover table-bordered">
+            <thead class="text-center">
+            <tr class="table-active">
+                <th scope="col" class="table-dark w-auto">ID</th>
+                <th scope="col" class="table-dark w-50">Название</th>
+                <th scope="col" class="table-dark w-auto">Возрастная категория</th>
+                <th scope="col" class="table-dark w-25">Действие</th>
+            </tr>
+            </thead>
+            @if (Model.Groups.Any())
+            {
+                <tbody>
+                @foreach (var group in Model.Groups)
+                {
+                    <tr>
+                        <th class="text-center">@group.Id</th>
+                        <td class="text-center">@group.Name.AsString(EnumFormat.Description)</td>
+                        <td class="text-center">@group.AgeCategory.Name</td>
+                        <td class="p-1 text-center">
+                            <a asp-area="Admin" asp-controller="Group" asp-action="DeleteGroup" asp-route-groupId="@group.Id" asp-route-returnUrl="@returnUrl" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            }
+
+        </table>
+    </div>
+    <div class="tab-pane fade" id="nav-matches" role="tabpanel" aria-labelledby="nav-matches-tab">йцукйцук</div>
+</div>
 
 @section Scripts
 {

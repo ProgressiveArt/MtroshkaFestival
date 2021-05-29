@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MetroshkaFestival.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210529113525_UpdateAgeCategoriesAddBirthInterval")]
-    partial class UpdateAgeCategoriesAddBirthInterval
+    [Migration("20210529214239_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -102,14 +102,8 @@ namespace MetroshkaFestival.Data.Migrations
                         .IsRequired()
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsPlayOff")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Name")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("TournamentId")
                         .HasColumnType("integer");
@@ -117,9 +111,6 @@ namespace MetroshkaFestival.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AgeCategoryId");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.HasIndex("TournamentId");
 

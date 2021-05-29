@@ -22,11 +22,11 @@
 
     <div class="form-group row pt-4">
         <div class="col-md-2">
-            <label asp-for="CityId" class="control-label col-form-label">Год проведения</label>
+            <label asp-for="CityId" class="control-label col-form-label">Город проведения</label>
         </div>
         <div class="col-md-8">
             @Html.DropDownListFor(x => x.CityId, ViewBag.Cities as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
-            <span class="invalid-feedback" asp-validation-for="CityId"></span>
+            <span class="invalid-feedback" asp-validation-for="CityId" aria-required="true"></span>
         </div>
     </div>
 
@@ -36,7 +36,7 @@
         </div>
         <div class="col-md-8">
             @Html.DropDownListFor(x => x.YearOfTour, ViewBag.Years as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
-            <span class="invalid-feedback" asp-validation-for="YearOfTour"></span>
+            <span class="invalid-feedback" asp-validation-for="YearOfTour" aria-required="true"></span>
         </div>
     </div>
 

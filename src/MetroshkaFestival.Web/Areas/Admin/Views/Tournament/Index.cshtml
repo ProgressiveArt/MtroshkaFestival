@@ -82,7 +82,16 @@
                     <a asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" asp-route-tournamentId="@tournamentModel.Id" class="stretched-link link-dark">@tournamentModel.Name</a>
                 </td>
                 <td class="p-1 text-center">
-                    <a asp-area="Admin" asp-controller="Tournament" asp-action="DeleteTournament" asp-route-tournamentId="@tournamentModel.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                    @if (tournamentModel.CanBeRemoved)
+                    {
+                        <a asp-area="Admin" asp-controller="Tournament" asp-action="DeleteTournament" asp-route-tournamentId="@tournamentModel.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                    }
+                    else
+                    {
+                        <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить турнир имеющий группы">
+                            <button class="btn btn-outline-secondary btn-md btn-block w-50" type="button" disabled>Удалить</button>
+                        </span>
+                    }
                 </td>
             </tr>
         }

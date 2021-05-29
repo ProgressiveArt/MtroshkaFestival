@@ -51,6 +51,29 @@ namespace MetroshkaFestival.Data
             await CreateUser(userStore, userManager, roleStore, "admin", "admin", email, password, ApplicationRole.Admin);
         }
 
+        public static async Task CreateDefaultCities(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+            var cities = new City[]
+            {
+                new() {Name = "Челябинск"},
+                new() {Name = "Копейск"},
+                new() {Name = "Пермь"},
+                new() {Name = "Коркино"},
+                new() {Name = "Уфа"}
+            };
+            if (!dataContext.Cities.Any())
+            {
+                foreach (var city in cities)
+                {
+                    await dataContext.Cities.AddAsync(city);
+                    await dataContext.SaveChangesAsync();
+                }
+            }
+        }
+
         private static async Task CreateUser(ApplicationUserStore userStore,
             UserManager<User> userManager, ApplicationRoleStore roleStore,
             string firstName, string lastName, string email,

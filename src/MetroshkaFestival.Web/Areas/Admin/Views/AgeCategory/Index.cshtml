@@ -48,7 +48,16 @@
                 <td>@ageCategory.AgeGroup.AsString(EnumFormat.Description)</td>
                 <td class="p-1 text-center">@ageCategory.RangeOfBirthYears</td>
                 <td class="p-1 text-center">
-                    <a asp-area="Admin" asp-controller="AgeCategory" asp-action="DeleteAgeCategory" asp-route-ageCategoryId="@ageCategory.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                    @if (ageCategory.CanBeRemoved)
+                    {
+                        <a asp-area="Admin" asp-controller="AgeCategory" asp-action="DeleteAgeCategory" asp-route-ageCategoryId="@ageCategory.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                    }
+                    else
+                    {
+                        <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить использующуюся категорию">
+                            <button class="btn btn-outline-secondary btn-md btn-block w-50" type="button" disabled>Удалить</button>
+                        </span>
+                    }
                 </td>
             </tr>
         }

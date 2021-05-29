@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MetroshkaFestival.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210526010812_Initial")]
-    partial class Initial
+    [Migration("20210529222734_AddCanBeRemovedColumnToTournament")]
+    partial class AddCanBeRemovedColumnToTournament
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,9 +31,16 @@ namespace MetroshkaFestival.Data.Migrations
                     b.Property<int>("AgeGroup")
                         .HasColumnType("integer");
 
-                    b.Property<string>("RangeOfBirthYears")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<bool>("CanBeRemoved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<DateTime>("MaxBirthDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("MinBirthDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
 
@@ -100,14 +107,8 @@ namespace MetroshkaFestival.Data.Migrations
                         .IsRequired()
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsPlayOff")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Name")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("TournamentId")
                         .HasColumnType("integer");
@@ -115,9 +116,6 @@ namespace MetroshkaFestival.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AgeCategoryId");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.HasIndex("TournamentId");
 
@@ -243,6 +241,11 @@ namespace MetroshkaFestival.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<bool>("CanBeRemoved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<int?>("CityId")
                         .IsRequired()

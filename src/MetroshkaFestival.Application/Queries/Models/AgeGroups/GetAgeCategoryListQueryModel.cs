@@ -20,16 +20,6 @@ namespace MetroshkaFestival.Application.Queries.Models.AgeGroups
         }
     }
 
-    public record AddAgeCategoryModel(string ReturnUrl,
-        [Required]
-        AgeGroup? AgeGroup = null,
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Год не может быть отрицательным")]
-        int? MinBirthYear = null,
-        [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Год не может быть отрицательным")]
-        int? MaxBirthYear = null);
-
     public class AgeCategoryListModel
     {
         public GetAgeCategoryListQueryModel Query { get; set; }

@@ -35,6 +35,7 @@ namespace MetroshkaFestival.Application.Queries.Models.Tournaments
         public string Name { get; set; }
         public int YearOfTour  { get; set; }
         public City City { get; set; }
+        public bool CanBeRemoved { get; set; }
     }
 
     public class TournamentModel : TournamentListItemModel
