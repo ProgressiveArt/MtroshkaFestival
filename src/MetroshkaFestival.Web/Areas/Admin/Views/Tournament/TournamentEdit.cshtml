@@ -1,0 +1,75 @@
+﻿@model MetroshkaFestival.Application.Commands.Records.Tournaments.AddOrUpdateTournamentCommandRecord
+@{
+    ViewData["Title"] = Model?.Name ?? "Создание турнира";
+    ViewData["Controller"] = "Tournament";
+    ViewBag.Tab = "tab0";
+    ViewBag.TabProfile = "tab0";
+}
+
+<form asp-action="AddOrUpdateTournament" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <div class="text-center p-3">
+        @if (Model?.Id == null)
+        {
+            <span class="h3">Добавление турнира</span>
+        }
+        else
+        {
+            <span class="h3">Редактируемый турнир: @ViewData["Title"]</span>
+        }
+    </div>
+    <input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
+    <input data-val="true" asp-for="ReturnUrl" type="hidden" value="@Model?.ReturnUrl"/>
+
+    <div class="form-group row pt-4">
+        <div class="col-md-2">
+            <label asp-for="CityId" class="control-label col-form-label">Год проведения</label>
+        </div>
+        <div class="col-md-8">
+            @Html.DropDownListFor(x => x.CityId, ViewBag.Cities as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
+            <span class="invalid-feedback" asp-validation-for="CityId"></span>
+        </div>
+    </div>
+
+    <div class="form-group row pt-4">
+        <div class="col-md-2">
+            <label asp-for="YearOfTour" class="control-label col-form-label">Год проведения</label>
+        </div>
+        <div class="col-md-8">
+            @Html.DropDownListFor(x => x.YearOfTour, ViewBag.Years as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
+            <span class="invalid-feedback" asp-validation-for="YearOfTour"></span>
+        </div>
+    </div>
+
+    <div class="form-group row pt-4">
+        <div class="col-md-2">
+            <label asp-for="Description" class="control-label col-form-label">Описание</label>
+        </div>
+        <div class="col-md-8">
+            <input asp-for="Description" class="form-control border-violet" placeholder="Введите описание турнира"/>
+        </div>
+    </div>
+
+    <div class="form-group row justify-content-center">
+        @if (Model?.Id == null)
+        {
+            <input class="btn btn-success mt-2 col-4" type="submit" value="Добавить"/>
+            <div class="form-group row justify-content-center mt-2">
+                <a class="btn btn-danger btn-block col-4 text-center" asp-area="Admin" asp-controller="Tournament" asp-action="Index">Отменить</a>
+            </div>
+        }
+        else
+        {
+            <input class="btn btn-success mt-2 col-4" type="submit" value="Обновить"/>
+            <div class="form-group row justify-content-center mt-2">
+                <a class="btn btn-danger btn-block col-4 text-center" asp-route-tournamentId="@Model.Id" asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary">Отменить</a>
+            </div>
+        }
+    </div>
+
+    
+</form>
+
+@section Scripts
+{
+    <script src="~/js/checkInvalid.js"></script>
+}

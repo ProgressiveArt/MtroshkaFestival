@@ -30,6 +30,7 @@ namespace MetroshkaFestival.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("RangeOfBirthYears")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -189,6 +190,7 @@ namespace MetroshkaFestival.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int?>("TeamId")
+                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -247,19 +249,12 @@ namespace MetroshkaFestival.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("YearOfTour")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<int>("YearOfTour")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
 
                     b.ToTable("Tournaments");
                 });
@@ -526,7 +521,9 @@ namespace MetroshkaFestival.Data.Migrations
 
                     b.HasOne("MetroshkaFestival.Data.Entities.Team", "Team")
                         .WithMany()
-                        .HasForeignKey("TeamId");
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Photo");
 

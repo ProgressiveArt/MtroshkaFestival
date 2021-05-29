@@ -1,8 +1,5 @@
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using MetroshkaFestival.Application.Commands.Handlers;
-using MetroshkaFestival.Application.Commands.Handlers.Account;
 using MetroshkaFestival.Application.Commands.Records.Account;
 using MetroshkaFestival.Application.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -15,29 +12,31 @@ namespace MetroshkaFestival.Web.Controllers
     public class AccountController : Controller
     {
         private readonly LoggerService _loggerService;
+        private readonly UserService _userService;
 
-        public AccountController(LoggerService loggerService)
+        public AccountController(LoggerService loggerService, UserService userService)
         {
             _loggerService = loggerService;
+            _userService = userService;
         }
 
         [HttpGet]
         public IActionResult SignIn()
         {
-            return User.Identity.IsAuthenticated ? RedirectToAction("Index", "Home") : LogAndView();
+            return User.Identity.IsAuthenticated ? RedirectToAction("Index", "AdminHome") : LogAndView();
         }
 
         [HttpPost]
-        public async Task<IActionResult> SignIn([FromServices] SignInCommandHandler handler,
-            [FromForm] SignInCommandRecord commandRecord,
-            CancellationToken ct)
+        public async Task<IActionResult> SignIn([FromForm] SignInCommandRecord commandRecord)
         {
             if (!ModelState.IsValid)
             {
                 return LogAndView(commandRecord);
             }
 
-            var result = await handler.Handle(commandRecord, ct);
+            var (username, password) = commandRecord;
+            var signInErrorCode = await _userService.SignInAsync(username, password, true);
+            var result = SignInCommandResult.BuildResult(signInErrorCode);
 
             if (result.Error != null)
             {
@@ -51,16 +50,14 @@ namespace MetroshkaFestival.Web.Controllers
             }
 
             Log.Debug("The \"Sign In\" command finished successfully");
-            return RedirectToAction("Index", "Home");
+            return RedirectToRoute(new { area="Admin", controller="AdminHome", action="Index"});
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> SignOut([FromServices] SignOutCommandHandler handler,
-            [FromQuery] SignOutCommandRecord commandRecord,
-            CancellationToken ct)
+        public new async Task<IActionResult> SignOut()
         {
-            await handler.Handle(commandRecord, ct);
+            await _userService.SignOut();
             return RedirectToAction("Index", "Home");
         }
 

@@ -1,43 +1,76 @@
-﻿@model MetroshkaFestival.Application.Queries.Records.Tournaments.TournamentListModel
+﻿@using MetroshkaFestival.Application.WebModels.Tournaments
+@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@model MetroshkaFestival.Application.Queries.Models.Tournaments.TournamentListModel
 @{
     ViewData["Title"] = "Турниры";
     ViewData["Controller"] = "Tournament";
+    var returnUrl = Context.Request.GetUri().AbsoluteUri;
 }
-
-@section Header{}
-
-<style>
-    table, tr, td {
-        border: 1px solid black;
-        border-collapse: inherit;
-    }
-</style>
-
-
-<div class="pos-f-t ">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb bg-dark justify-content-start m-0">
-            <li class="invert-color pr-1">Местоположение: </li>
-            <li class=" text-color-link breadcrumb-item active" aria-current="page">
-                <b>Турниры</b>
-            </li>
-        </ol>
-    </nav>
+<div class="row">
+    <h2 class="mt-3 col-sm">@ViewBag.Title | Всего: @Model.Tournaments.TotalItemCount</h2>
+    <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center">
+        <a asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить турнир</a>
+    </div>
+    <div class="dropdown-divider"></div>
 </div>
 
-<div class="d-flex justify-content-center mt-3 mb-3">
-    <form asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" method="get" class="border border-dark p-1 bg-table">
-        <input class="btn btn-secondary" type="submit" value="Добавить турнир"/>
-    </form>
-</div>
+<form asp-controller="Tournament" asp-action="Index" method="get" class="form-inline row" role="search">
+    <div class="input-group mr-2 col-md-auto pe-1">
+        <div class="input-group-prepend col-sm-2">
+            <span class="input-group-text">Поиск по названию</span>
+        </div>
+        @Html.TextBox("Filter.Name", null, new {placeholder = "Введите название турнира", @class = "form-control searchinput"})
+    </div>
+
+    <div class="row row-cols-auto pe-1 m-0 mt-2">
+        <div class="input-group mr-2 col-sm">
+            <div class="input-group-prepend col-sm-6">
+                <span class="input-group-text">Год проведения</span>
+            </div>
+            @Html.DropDownListFor(x => x.Query.Filter.YearOfTour, ViewBag.Years as IEnumerable<SelectListItem>, new {@class = "form-control"})
+        </div>
+
+        <div class="input-group mr-2 col-sm">
+            <div class="input-group-prepend col-sm-6">
+                <span class="input-group-text">Город проведения</span>
+            </div>
+            @Html.DropDownListFor(x => x.Query.Filter.CityId, ViewBag.Cities as IEnumerable<SelectListItem>, new {@class = "form-control"})
+        </div>
+    </div>
+
+    <div class="row justify-content-around mt-3 mb-2">
+        <button class="btn btn-outline-success  w-25" type="submit">Поиск</button>
+        <a asp-area="Admin" asp-controller="Tournament" asp-action="Index" class="btn btn-outline-secondary w-25">Сбросить фильтры</a>
+    </div>
+</form>
+
 
 <div class="text-center d-flex justify-content-center">
-    <table class="table table-hover table-dark">
+    <table class="table table-hover">
         <thead>
         <tr>
-            <th scope="col" width="100px">ID</th>
-            <th scope="col" width="900px">Турниры</th>
-            <th scope="col" width="150px">Действие</th>
+            <th scope="col" class="table-dark w-auto">
+                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                      sort-name="@TournamentSortingEnum.Id" class="link-info">
+                    ID
+                </sort>
+            </th>
+            <th scope="col" class="table-dark w-auto">
+                Турниры(
+                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                      sort-name="@TournamentSortingEnum.Name" class="link-info">
+                    Название
+                </sort>,
+                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                      sort-name="@TournamentSortingEnum.City" class="link-info">
+                    Город
+                </sort>,
+                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                      sort-name="@TournamentSortingEnum.YearOfTour" class="link-info">
+                    Год
+                </sort>)
+            </th>
+            <th scope="col" class="table-dark w-25">Действие</th>
         </tr>
         </thead>
         <tbody>
@@ -45,35 +78,28 @@
         {
             <tr>
                 <th scope="row" class="text-break">@tournamentModel.Id</th>
-                <td>
-                    <div class="card education-card">
-                        <div class="card-body bg-dark">
-                            <h3 class="card-title text-truncate m-0" style="max-width: 900px;"> @tournamentModel.Name</h3>
-                            <h6 class="card-text m-0" style="max-width: 900px;">Сроки проведения: @tournamentModel.StartDate.ToShortDateString() - @tournamentModel.FinishDate.ToShortDateString()</h6>
-                        </div>
-                    </div>
+                <td style="transform: rotate(0);">
+                    <a asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" asp-route-tournamentId="@tournamentModel.Id" class="stretched-link link-dark">@tournamentModel.Name</a>
                 </td>
-                <td class="p-1">
-
-
-                    <div class="d-flex flex-column justify-content-between text-center">
-
-                        <div class="dropdown-divider"></div>
-                        <form asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" method="get">
-                            @Html.Hidden("tournamentId", tournamentModel.Id)
-                            <input class="btn btn-outline-success btn-md btn-block" type="submit" value=" • Изменить • "/>
-                        </form>
-
-                        <form asp-area="Admin" asp-controller="Tournament" asp-action="DeleteTournament" method="get">
-                            @Html.Hidden("tournamentId", tournamentModel.Id)
-                            <input class="btn btn-outline-danger btn-md btn-block" type="submit" value=" • Удалить • "/>
-                        </form>
-                    </div>
-
-
+                <td class="p-1 text-center">
+                    <a asp-area="Admin" asp-controller="Tournament" asp-action="DeleteTournament" asp-route-tournamentId="@tournamentModel.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
                 </td>
             </tr>
         }
         </tbody>
     </table>
 </div>
+
+@if (Model.Tournaments.PageCount > 1)
+{
+    <nav aria-label="navigation">
+        <pager class="pager-container"
+               options="PagedList.Core.Mvc.PagedListRenderOptions.Bootstrap4Full"
+               list="Model.Tournaments"
+               asp-area="Admin"
+               asp-controller="Tournament"
+               asp-action="Index"
+               param-page-number="Page.NumPage"
+               asp-all-route-data="@Model.Query.GetAllQueryData()"/>
+    </nav>
+}

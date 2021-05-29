@@ -1,20 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Interfaces.Application;
 
 namespace MetroshkaFestival.Application.Commands.Records.Tournaments
 {
-    public record AddOrUpdateTournamentCommandRecord(
+    public record AddOrUpdateTournamentCommandRecord(string ReturnUrl,
         int? Id = null,
-
-        [Required(ErrorMessage = "Не введено название турнира")]
         string Name = null,
-
-        [Required(ErrorMessage = "Не указана дата начала турнира")]
-        DateTime? StartDate = null,
-
-        [Required(ErrorMessage = "Не указана дата завершения турнира")]
-        DateTime? FinishDate = null) : ICommand<CommandResult>;
+        [Required(ErrorMessage = "Не указан год проведения турнира")] int? YearOfTour = null,
+        [Required(ErrorMessage = "Не указан город проведения турнира")] int? CityId = null,
+        string Description = null) : ICommand<CommandResult>;
 
     public sealed class AddOrUpdateTournamentCommandResult : CommandResult
     {

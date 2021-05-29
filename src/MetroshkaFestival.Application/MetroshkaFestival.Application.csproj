@@ -15,5 +15,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
         <ProjectReference Include="..\MetroshkaFestival.Data\MetroshkaFestival.Data.csproj" />
+        <ProjectReference Include="..\MetroshkaFestival.Core\MetroshkaFestival.Core.csproj" />
     </ItemGroup>
 </Project>

@@ -1,0 +1,63 @@
+﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@model MetroshkaFestival.Application.Queries.Models.Tournaments.TournamentModel
+@{
+    ViewData["Title"] = "Профиль турнира";
+    ViewData["Controller"] = "Tournament";
+    ViewBag.Tab = "tab0";
+    ViewBag.TabProfile = "tab0";
+    var returnUrl = Context.Request.GetUri().AbsoluteUri;
+}
+
+<div class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <div class="text-center p-3 row justify-content-center">
+        <span class="h3">@ViewData["Title"]</span><br>
+        <button type="button" class="btn btn-outline-dark w-25">
+            <a asp-area="Admin" asp-controller="Tournament" asp-action="Index" class="p-0 m-0 text-right nav-link text-decoration-none@(ViewBag.Tab == "tab0" ? "active" : null)" style="font-size: 14px; color: #007fff">Назад к списку</a>
+        </button>
+    </div>
+    <input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
+
+    <div class="card">
+        <div class="card-header text-center">
+            <h5 class="card-title bg-gradient">@Model?.Name</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Год проведения: </dt>
+                <dd class="col-sm-9">@Model?.YearOfTour</dd>
+
+                <dt class="col-sm-3">Город проведения: </dt>
+                <dd class="col-sm-9">@Model?.City.Name</dd>
+
+                <dt class="col-sm-3">Описание турнира: </dt>
+                <dd class="col-sm-9">@Model?.Description</dd>
+            </dl>
+
+            <div class="row text-center">
+                <a asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" class="btn btn-success mt-2 col-sm w-25"
+                   asp-route-tournamentId="@Model.Id" asp-route-isReadOnly="false" asp-route-returnUrl="@returnUrl">
+                    Изменить
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="nav nav-tabs nav-fill px-2 mt-2">
+    <li class="nav-item @(ViewBag.TabProfile == "tab0" ? "active" : null)">
+        <form asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" method="get">
+            @Html.Hidden("tournamentId", Model.Id)
+            <input class="nav-link @(ViewBag.TabProfile == "tab0" ? "active" : null)" type="submit" value="Матчи"/>
+        </form>
+    </li>
+    <li class="nav-item @(ViewBag.TabProfile == "tab1" ? "active" : null)">
+        <form asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" method="get">
+            @Html.Hidden("tournamentId", Model.Id)
+            <input class="nav-link @(ViewBag.TabProfile == "tab1" ? "active" : null)" type="submit" value="Команды"/>
+        </form>
+    </li>
+</ul>
+
+@section Scripts
+{
+    <script src="~/js/checkInvalid.js"></script>
+}

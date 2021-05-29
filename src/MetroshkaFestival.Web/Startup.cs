@@ -111,7 +111,7 @@ namespace MetroshkaFestival.Web
             if (!env.IsProduction())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "TimeHub API"); });
+                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "MetroshkaFestival API"); });
             }
 
             app.ConfigureExceptionHandler();
@@ -126,14 +126,14 @@ namespace MetroshkaFestival.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Account}/{action=Login}");
+                    pattern: "{controller=Account}/{action=SignIn}");
+                //
+                // endpoints.MapControllerRoute(
+                //     name: "default",
+                //     pattern: "{area=Admin}/{controller=AdminHome}/{action=Index}");
 
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{area=Admin}/{controller=University}/{action=Index}");
-
-                endpoints.MapControllerRoute(name: "defaults",
-                    pattern: "{controller}/{action}");
+                // endpoints.MapControllerRoute(name: "defaults",
+                //     pattern: "{controller}/{action}");
 
                 endpoints.MapControllers();
             });

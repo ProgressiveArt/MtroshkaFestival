@@ -1,0 +1,14 @@
+<ul class="nav nav-tabs nav-fill px-2 mt-2">
+    <li class="nav-item">
+        @Html.ActionLink("Турниры", "Index", "Tournament", new {area = "Admin"},
+            new {@class = $"nav-link {(ViewBag.TabProfile == "tab0" ? "active" : null)}"})
+    </li>
+    <li class="nav-item @(ViewBag.TabProfile == "tab1" ? "active" : null)">
+        @Html.ActionLink("Команды", "Index", "Tournament", new {area = "Admin"},
+            new {@class = $"nav-link {(ViewBag.TabProfile == "tab1" ? "active" : null)}"})
+    </li>
+    <li class="nav-item @(ViewBag.TabProfile == "tab2" ? "active" : null)">
+        @Html.ActionLink("Отчеты", "Index", "Tournament", new {area = "Admin"},
+            new {@class = $"nav-link {(ViewBag.TabProfile == "tab2" ? "active" : null)}"})
+    </li>
+</ul>

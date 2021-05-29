@@ -4,11 +4,12 @@ using Interfaces.Application;
 namespace MetroshkaFestival.Application.Commands.Records.Account
 {
     public record SignInCommandRecord(
-        [Required(ErrorMessage = "Не введен логин")]
+        [Required(ErrorMessage = "Логин обязателен для ввода")]
+        [DataType(DataType.EmailAddress, ErrorMessage = "Пожалуйста введите корректный адрес электронной почты")]
         string Username,
 
-        [Required(ErrorMessage = "Не введен пароль")]
-        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Пароль обязателен для ввода")]
+        [DataType(DataType.Password, ErrorMessage = "Пожалуйста введите корректный адрес электронной почты")]
         string Password) : ICommand<CommandResult>;
 
     public sealed class SignInCommandResult : CommandResult

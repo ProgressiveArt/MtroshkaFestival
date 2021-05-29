@@ -9,16 +9,13 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-image: url("../images/elements/background.jpg");
     background-attachment: fixed;
     background-size: cover;
 
 }
-
 header {
     /* 0 flex-grow, 0 flex-shrink, auto flex-basis */
     flex: 0 0 auto;
-    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.14)), #121212;
 }
 
 main {
@@ -30,9 +27,6 @@ footer {
     /* 0 flex-grow, 0 flex-shrink, auto flex-basis */
     flex: 0 0 auto;
     width: 100%;
-    padding-top: 2%;
-    padding-bottom: 2%;
-    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.14)), #121212;
 }
 
 * {
@@ -40,27 +34,144 @@ footer {
     padding: 0;
 }
 
-.border-violet {
-    border: 1px solid #BB86FC !important;
-    color: #FFFFFF !important;
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
 }
-
-
-input[type="text"]::-webkit-input-placeholder, 
-input[type="text"]::-moz-placeholder,
-input[type="password"]::-webkit-input-placeholder, 
-input[type="password"]::-moz-placeholder {
-     color: #888888;
- }
-
 
 .container {
     height: 100%;
 }
 
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+.glyphicon-refresh-animate {
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: scale(1) rotate(0deg);
+    }
+
+    to {
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.pip {
+    position: relative;
+    width: 50%;
+}
+
+.middle {
+    cursor: pointer;
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%)
+}
+
+.text {
+    border-radius: 5px;
+    background-color: #d9534f;
+    color: white;
+    padding: 4px 8px;
+}
+
+.pip:hover .img-thumbnail {
+    opacity: 0.3;
+}
+
+.pip:hover .middle {
+    opacity: 1;
+}
+
+.dz-image img {
+    height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+.ui-helper-hidden-accessible {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+.note-editor .note-editable.panel-body table {
+    border: 1px solid #ddd;
+}
+
+.note-editor .note-editable.panel-body table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    line-height: 1.42857143;
+    vertical-align: top;
+}
+
+.skill {
+    margin-bottom: 10px;
+    padding-right: 0;
+}
+
+.col-auto {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+}
+
+.title-with-button-row {
+    display: flex;
+    align-items: center;
+}
+
 ::-webkit-scrollbar-button {
-    /*background-image:url('');*/
-    /*background-repeat:no-repeat;*/
     width:5px;
     height:0px
 }
@@ -80,7 +191,6 @@ input[type="password"]::-moz-placeholder {
 }
 
 ::-webkit-resizer{
-    background-image:url('');
     background-repeat:no-repeat;
     width:4px;
     height:0px
@@ -90,54 +200,6 @@ input[type="password"]::-moz-placeholder {
     width: 4px;
 }
 
-.text-color-link {
-    color: #BB86FC;
-}
-
-.bg-darker {
-    background-color: rgba(0, 0, 0, 0.4)
-}
-
 .invert-color {
     filter: invert();
 }
-
-.version {
-    font-family: Roboto Mono;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 24px;
-
-    letter-spacing: 0.1px;
-
-    color: rgba(255, 255, 255, 0.87);
-}
-
-.contacts {
-    font-family: Roboto;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 16px;
-    line-height: 20px;
-
-    letter-spacing: 0.25px;
-
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.username {
-    font-family: Roboto Mono;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 12px;
-    line-height: 12px;
-
-    letter-spacing: -0.133333px;
-
-    color: #FFFFFF;
-}
-
-
-
-

@@ -1,30 +1,9 @@
 @using MetroshkaFestival.Web.HtmlHelpers
 @{
-    ViewData["Title"] = "TimeHub - Главная";
-}
-
-@section Header
-{
-    <div class="col-md-8 text-center p-0">
-        <span class="username">&bull; Пользователь: <b>@Html.GetLogin(User)</b> &bull;</span>
-    </div>
-
-    @if (Html.GetLogin(User) != "Anonim")
-    {
-        <div class="col-md-2 row p-0 m-0 justify-content-center">
-            <a class="btn btn-danger border border-dark text-center col-lg-8" asp-controller="Account" asp-action="SignOut">Выход</a>
-        </div>
-    }
-    else
-    {
-        <div class="col-md-2 row p-0 m-0 justify-content-center">
-            <a class="btn btn-success border border-dark text-center col-lg-8" asp-controller="Account" asp-action="SignIn">Вход</a>
-        </div>
-    }
-    
+    ViewData["Title"] = "Фестиваль \"Метрошка\"- Главная";
 }
 
 @if (Html.GetRole(User) == "Admin")
 {
-    <a class="btn btn-primary" asp-area="Admin" asp-controller="Tournament" asp-action="Index">Погнале в админку</a>
+    <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminHome" asp-action="Index">Погнале в админку</a>
 }

@@ -15,7 +15,7 @@ namespace MetroshkaFestival.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AgeGroup = table.Column<int>(type: "integer", nullable: false),
-                    RangeOfBirthYears = table.Column<string>(type: "text", nullable: true)
+                    RangeOfBirthYears = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,9 +124,8 @@ namespace MetroshkaFestival.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
                     CityId = table.Column<int>(type: "integer", nullable: false),
-                    YearOfTour = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    YearOfTour = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -258,7 +257,7 @@ namespace MetroshkaFestival.Data.Migrations
                     DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Number = table.Column<int>(type: "integer", nullable: false),
                     School = table.Column<string>(type: "text", nullable: false),
-                    TeamId = table.Column<int>(type: "integer", nullable: true),
+                    TeamId = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -275,7 +274,7 @@ namespace MetroshkaFestival.Data.Migrations
                         column: x => x.TeamId,
                         principalTable: "Teams",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -429,12 +428,6 @@ namespace MetroshkaFestival.Data.Migrations
                 name: "IX_Tournaments_CityId",
                 table: "Tournaments",
                 column: "CityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tournaments_Name",
-                table: "Tournaments",
-                column: "Name",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",

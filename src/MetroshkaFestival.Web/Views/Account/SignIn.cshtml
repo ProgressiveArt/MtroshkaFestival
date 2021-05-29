@@ -1,32 +1,43 @@
 @model MetroshkaFestival.Application.Commands.Records.Account.SignInCommandRecord
 @{
     ViewData["Title"] = "Авторизация";
+    Layout = "_UnauthorizedLayout";
 }
+<style type="text/css"></style>
+<h2 class="form-group row mt-4 justify-content-center">Вход в систему</h2>
 
-@section Header{}
-
-<div class="container">
-    <div class="row justify-content-center">
-        <form method="post" asp-controller="Account" asp-action="SignIn" width="50px" class="row col-4 mt-5 pe-5 px-5 bg-dark rounded">
-
-            <div class="form-group row mt-4 text-white justify-content-center">Вход в систему</div>
-            <div class="form-group row mt-4 ">
-                <input class="form-control bg-dark border-violet" id="LoginInputId" type="text" placeholder="Введите логин" asp-for="Username"/>
+<form method="post" asp-controller="Account" asp-action="SignIn" asp-antiforgery="true">
+    <div class="form-horizontal">
+        <hr/>
+        <div class="form-group row justify-content-center">
+            <div class="col-sm-1">
+                <label asp-for="Username"></label>
             </div>
-
-            <div class="form-group row pt-2">
-                <input class="form-control bg-dark border-violet" id="PasswordInputId" type="password" placeholder="Введите пароль" asp-for="Password"/>
+            <div class="col-sm-3">
+                <input type="text" asp-for="Username" class="form-control" required/>
             </div>
+        </div>
 
-            <div asp-validation-summary="All" class="text-danger form-group row mt-4 text-center"></div>
-
-            <div class="form-group row pt-4">
-                <div class="col-2"></div>
-                <input class="btn btn-success col-8" id="SignInButtonId" type="submit" value="Вход"/>
+        <div class="form-group row justify-content-center">
+            <div class="col-sm-1">
+                <label asp-for="Password"></label>
             </div>
-        </form>
+            <div class="col-sm-3">
+                <input asp-for="Password" type="password" class="form-control" required/>
+            </div>
+        </div>
+
+        <div class="form-group text-center mt-4">
+            <div class="col-sm-offset-2 justify-content-center">
+                <input type="submit" value="Вход" class="btn btn-success w-25"/>
+            </div>
+        </div>
+        
+        <div class="row justify-content-sm-center">
+            <div asp-validation-summary="All" class="text-danger row mt-4 w-25"></div>
+        </div>
     </div>
-</div>
+</form>
 
 @section Scripts
 {

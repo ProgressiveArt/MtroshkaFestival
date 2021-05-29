@@ -1,0 +1,12 @@
+.profile-circle-image {
+    object-fit: cover;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.profile-fullname-text {
+    display: inline-block;
+    margin-left: 24px;
+    font-size: 24px;
+}
