@@ -141,7 +141,10 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
             CommandResult result;
             try
             {
-                var tournament = await _dataContext.Tournaments.FirstOrDefaultAsync(x => x.Id == commandRecord.Id, ct);
+                var tournament = await _dataContext.Tournaments
+                    .Include(x => x.City)
+                    .FirstOrDefaultAsync(x => x.Id == commandRecord.Id, ct);
+
                 var city = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == commandRecord.CityId.Value, ct);
                 if (city == null)
                 {
@@ -159,17 +162,29 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
                         Description = commandRecord.Description
                     };
 
+                    city.CanBeRemoved = false;
                     await _dataContext.Tournaments.AddAsync(tournament, ct);
                     await _dataContext.SaveChangesAsync(ct);
                     result = AddOrUpdateTournamentCommandResult.BuildResult();
                 }
                 else
                 {
+                    var lastCity = tournament.City;
                     tournament.City = city;
                     tournament.YearOfTour = yearOfTour;
                     tournament.Description = commandRecord.Description;
-
+                    city.CanBeRemoved = false;
                     await _dataContext.SaveChangesAsync(ct);
+
+                    var canNotBeRemoved = await _dataContext.Tournaments
+                        .Include(x => x.City)
+                        .AnyAsync(x => x.City == lastCity, ct);
+
+                    if (!canNotBeRemoved)
+                    {
+                        lastCity.CanBeRemoved = true;
+                        await _dataContext.SaveChangesAsync(ct);
+                    }
                     result = AddOrUpdateTournamentCommandResult.BuildResult();
                 }
             }
@@ -197,15 +212,28 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task<ActionResult> DeleteTournament(int tournamentId)
         {
-            var tournament = await _dataContext.Tournaments.FirstOrDefaultAsync(x => x.Id == tournamentId);
+            var tournament = await _dataContext.Tournaments
+                .Include(x => x.City).
+                FirstOrDefaultAsync(x => x.Id == tournamentId);
 
             if (tournament == null)
             {
                 throw new HttpResponseException(StatusCodes.Status404NotFound);
             }
 
+            var tournamentCity = tournament.City;
             _dataContext.Tournaments.Remove(tournament);
             await _dataContext.SaveChangesAsync();
+
+            var canNotBeRemoved = await _dataContext.Tournaments
+                .Include(x => x.City)
+                .AnyAsync(x => x.City == tournamentCity);
+
+            if (!canNotBeRemoved)
+            {
+                tournamentCity.CanBeRemoved = true;
+                await _dataContext.SaveChangesAsync();
+            }
 
             return RedirectToAction("Index", "Tournament");
         }

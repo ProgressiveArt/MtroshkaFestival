@@ -71,7 +71,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAddCategoryPage(string returnUrl)
+        public ActionResult GetAddAgeCategoryPage(string returnUrl)
         {
             var command = new AddAgeCategoryCommandRecord(returnUrl);
             FillSelected();

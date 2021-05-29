@@ -14,7 +14,7 @@
         </div>
         <div class="col-md-6">
             @Html.DropDownListFor(x => x.AgeGroup, ViewBag.AgeGroups as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
-            <span class="invalid-feedback" asp-validation-for="AgeGroup" aria-required="true"></span>
+            <span class="invalid-feedback d-none" asp-validation-for="AgeGroup" aria-required="true"></span>
         </div>
     </div>
     <div class="form-group row pt-4">
@@ -23,7 +23,7 @@
         </div>
         <div class="col-md-6">
             @Html.DropDownListFor(x => x.MinBirthYear, ViewBag.Years as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
-            <span class="invalid-feedback" asp-validation-for="MinBirthYear" aria-required="true"></span>
+            <span class="invalid-feedback d-none" asp-validation-for="MinBirthYear" aria-required="true"></span>
         </div>
     </div>
     <div class="form-group row pt-4">
@@ -32,7 +32,7 @@
         </div>
         <div class="col-md-6">
             @Html.DropDownListFor(x => x.MaxBirthYear, ViewBag.Years as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
-            <span class="invalid-feedback" asp-validation-for="MaxBirthYear" aria-required="true"></span>
+            <span class="invalid-feedback d-none" asp-validation-for="MaxBirthYear" aria-required="true"></span>
         </div>
     </div>
 

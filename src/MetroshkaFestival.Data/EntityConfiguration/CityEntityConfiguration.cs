@@ -13,6 +13,10 @@ namespace MetroshkaFestival.Data.EntityConfiguration
 
             entity.HasIndex(x => x.Name)
                 .IsUnique();
+
+            entity.Property(x => x.CanBeRemoved)
+                .IsRequired()
+                .HasDefaultValue(true);
         }
     }
 }

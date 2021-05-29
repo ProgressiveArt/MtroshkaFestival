@@ -10,7 +10,7 @@
 <div class="row">
     <h2 class="mt-3 col-sm">@ViewBag.Title | Всего: @Model.AgeCategories.Length</h2>
     <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center">
-        <a asp-area="Admin" asp-controller="AgeCategory" asp-action="GetAddCategoryPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить категорию</a>
+        <a asp-area="Admin" asp-controller="AgeCategory" asp-action="GetAddAgeCategoryPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить категорию</a>
     </div>
     <div class="dropdown-divider"></div>
 </div>
@@ -40,27 +40,30 @@
             <th scope="col" class="table-dark w-25">Действие</th>
         </tr>
         </thead>
-        <tbody>
-        @foreach (var ageCategory in Model.AgeCategories)
+        @if (Model.AgeCategories.Any())
         {
-            <tr>
-                <th scope="row" class="text-break">@ageCategory.Id</th>
-                <td>@ageCategory.AgeGroup.AsString(EnumFormat.Description)</td>
-                <td class="p-1 text-center">@ageCategory.RangeOfBirthYears</td>
-                <td class="p-1 text-center">
-                    @if (ageCategory.CanBeRemoved)
-                    {
-                        <a asp-area="Admin" asp-controller="AgeCategory" asp-action="DeleteAgeCategory" asp-route-ageCategoryId="@ageCategory.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
-                    }
-                    else
-                    {
-                        <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить использующуюся категорию">
-                            <button class="btn btn-outline-secondary btn-md btn-block w-50" type="button" disabled>Удалить</button>
-                        </span>
-                    }
-                </td>
-            </tr>
+            <tbody>
+            @foreach (var ageCategory in Model.AgeCategories)
+            {
+                <tr>
+                    <th scope="row" class="p-1 text-center">@ageCategory.Id</th>
+                    <td class="p-1 text-center">@ageCategory.AgeGroup.AsString(EnumFormat.Description)</td>
+                    <td class="p-1 text-center">@ageCategory.RangeOfBirthYears</td>
+                    <td class="p-1 text-center">
+                        @if (ageCategory.CanBeRemoved)
+                        {
+                            <a asp-area="Admin" asp-controller="AgeCategory" asp-action="DeleteAgeCategory" asp-route-ageCategoryId="@ageCategory.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                        }
+                        else
+                        {
+                            <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить использующуюся категорию">
+                                <button class="btn btn-outline-secondary btn-md btn-block w-50" type="button" disabled>Удалить</button>
+                            </span>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
         }
-        </tbody>
     </table>
 </div>

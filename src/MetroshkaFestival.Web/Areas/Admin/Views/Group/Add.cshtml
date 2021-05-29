@@ -15,7 +15,7 @@
         </div>
         <div class="col-md-6">
             @Html.DropDownListFor(x => x.Name, ViewBag.GroupNames as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
-            <span class="invalid-feedback" asp-validation-for="Name" aria-required="true"></span>
+            <span class="invalid-feedback d-none" asp-validation-for="Name" aria-required="true"></span>
         </div>
     </div>
 
@@ -25,7 +25,7 @@
         </div>
         <div class="col-md-6">
             @Html.DropDownListFor(x => x.AgeCategoryId, ViewBag.AgeCategories as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
-            <span class="invalid-feedback" asp-validation-for="AgeCategoryId" aria-required="true"></span>
+            <span class="invalid-feedback d-none" asp-validation-for="AgeCategoryId" aria-required="true"></span>
         </div>
     </div>
 

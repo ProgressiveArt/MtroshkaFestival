@@ -77,7 +77,8 @@
                         <td class="text-center">@group.Name.AsString(EnumFormat.Description)</td>
                         <td class="text-center">@group.AgeCategory.Name</td>
                         <td class="p-1 text-center">
-                            <a asp-area="Admin" asp-controller="Group" asp-action="DeleteGroup" asp-route-groupId="@group.Id" asp-route-returnUrl="@returnUrl" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                            <a asp-area="Admin" asp-controller="Group" asp-action="DeleteGroup" class="btn btn-outline-danger btn-md btn-block w-50"
+                               asp-route-groupId="@group.Id" asp-route-returnUrl="@returnUrl" asp-route-tournamentId="@Model.Id" >Удалить</a>
                         </td>
                     </tr>
                 }

@@ -1,0 +1,50 @@
+﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@model MetroshkaFestival.Application.Queries.Models.Cities.CityListModel
+@{
+    ViewData["Title"] = "Города";
+    ViewData["Controller"] = "City";
+    var returnUrl = Context.Request.GetUri().AbsoluteUri;
+}
+<div class="row">
+    <h2 class="mt-3 col-sm">@ViewBag.Title | Всего: @Model.Cities.Length</h2>
+    <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center">
+        <a asp-area="Admin" asp-controller="City" asp-action="GetAddCityPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить город</a>
+    </div>
+    <div class="dropdown-divider"></div>
+</div>
+
+<div class="text-center d-flex justify-content-center">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col" class="table-dark w-auto">ID</th>
+            <th scope="col" class="table-dark w-auto">Город</th>
+            <th scope="col" class="table-dark w-25">Действие</th>
+        </tr>
+        </thead>
+        @if (Model.Cities.Any())
+        {
+            <tbody>
+            @foreach (var city in Model.Cities)
+            {
+                <tr>
+                    <th scope="row" class="p-1 text-center">@city.Id</th>
+                    <td class="p-1 text-center">@city.Name</td>
+                    <td class="p-1 text-center">
+                        @if (city.CanBeRemoved)
+                        {
+                            <a asp-area="Admin" asp-controller="City" asp-action="DeleteCity" asp-route-cityId="@city.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                        }
+                        else
+                        {
+                            <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить использующийся город">
+                                <button class="btn btn-outline-secondary btn-md btn-block w-50" type="button" disabled>Удалить</button>
+                            </span>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        }
+    </table>
+</div>
