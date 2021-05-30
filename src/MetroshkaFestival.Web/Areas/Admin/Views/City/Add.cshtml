@@ -1,30 +1,29 @@
 ﻿@model MetroshkaFestival.Application.Commands.Records.Cities.AddCityCommandRecord
 @{
-    ViewData["Title"] = "Добавление города";
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Добавление города";
     ViewData["Controller"] = "City";
 }
-<h2 class="mt-3 col-sm text-center">@ViewBag.Title</h2>
+<h2 class="mt-3 col-sm text-center">Добавление города</h2>
 
 <form asp-action="AddCity" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
     <input data-val="true" asp-for="ReturnUrl" type="hidden" value="@Model?.ReturnUrl"/>
     
-        <div class="form-group row pt-4">
-            <div class="col-md-2">
-                <label asp-for="Name" class="control-label col-form-label">Описание</label>
-            </div>
-            <div class="col-md-8">
-                <input asp-for="Name" class="form-control border-violet" placeholder="Введите описание турнира"/>
-            </div>
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="Name" class="input-group-text col-sm-3">Название города</label>
+        <div class="col-sm-6">
+            <input asp-for="Name" class="form-control border-violet" placeholder="Введите название города"/>
         </div>
+    </div>
+
 
     <div class="form-group row justify-content-center">
-        <input class="btn btn-success mt-2 col-4" type="submit" value="Добавить"/>
+        <input class="btn btn-success mt-2 col-sm-4" type="submit" value="Добавить"/>
         <div class="form-group row justify-content-center mt-2">
-            <a class="btn btn-danger btn-block col-4 text-center" asp-area="Admin" asp-controller="City" asp-action="Index">Отменить</a>
+            <a class="btn btn-danger btn-block col-sm-4 text-center" asp-area="Admin" asp-controller="City" asp-action="Index">Отменить</a>
         </div>
     </div>
     <div class="row justify-content-sm-center">
-        <div asp-validation-summary="All" class="text-danger row mt-4 w-50"></div>
+        <div asp-validation-summary="All" class="text-danger row mt-4 col-sm-auto"></div>
     </div>
 </form>
 

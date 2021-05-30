@@ -1,0 +1,60 @@
+﻿@model MetroshkaFestival.Application.Commands.Records.Tournaments.AddTournamentCommandRecord
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Добавление турнира";
+    ViewData["Controller"] = "Tournament";
+    ViewBag.Tab = "tab0";
+    ViewBag.TabProfile = "tab0";
+}
+
+<div class="text-center p-3">
+    <span class="h3">Добавление турнира</span>
+</div>
+
+<form asp-action="AddTournament" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2 justify-content-center" enctype="multipart/form-data">
+    <input data-val="true" asp-for="ReturnUrl" type="hidden" value="@Model?.ReturnUrl"/>
+    <div class="input-group justify-content-center mb-3">
+        <label asp-for="TournamentType" class="input-group-text col-sm-3">Тип турнира</label>
+        <div class="col-sm-6">
+            @Html.DropDownListFor(x => x.TournamentType, ViewBag.TournamentTypes as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
+            <span class="invalid-feedback d-none" asp-validation-for="TournamentType" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center">
+        <label asp-for="YearOfTour" class="input-group-text col-sm-3">Год проведения</label>
+        <div class="col-sm-6">
+            @Html.DropDownListFor(x => x.YearOfTour, ViewBag.Years as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
+            <span class="invalid-feedback d-none" asp-validation-for="YearOfTour" aria-required="true"></span>
+        </div>
+    </div>
+    
+    <div class="input-group justify-content-center">
+        <label asp-for="CityId" class="input-group-text col-sm-3">Город проведения</label>
+        <div class="col-sm-6">
+            @Html.DropDownListFor(x => x.CityId, ViewBag.Cities as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
+            <span class="invalid-feedback d-none" asp-validation-for="CityId" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="Description" class="input-group-text col-sm-3">Описание</label>
+        <div class="col-sm-6">
+            <textarea asp-for="Description" class="form-control border-violet" rows="10" placeholder="Введите описание турнира"></textarea>
+        </div>
+    </div>
+
+    <div class="form-group row justify-content-center">
+        <input class="btn btn-success mt-2 col-sm-4" type="submit" value="Добавить"/>
+        <div class="form-group row justify-content-center mt-2">
+            <a class="btn btn-danger btn-block col-sm-4 text-center" href="@Model.ReturnUrl">Отменить</a>
+        </div>
+    </div>
+    <div class="row justify-content-sm-center">
+        <div asp-validation-summary="All" class="text-danger row mt-4 w-50"></div>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script src="~/js/checkInvalid.js"></script>
+}

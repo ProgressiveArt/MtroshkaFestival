@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MetroshkaFestival.Application.Commands;
+using EnumsNET;
 using MetroshkaFestival.Application.Commands.Records.Tournaments;
 using MetroshkaFestival.Application.Queries.Models.Tournaments;
 using MetroshkaFestival.Application.Services;
 using MetroshkaFestival.Core.Exceptions.Common;
 using MetroshkaFestival.Core.Exceptions.ExceptionCodes;
+using MetroshkaFestival.Core.Models.Common;
 using MetroshkaFestival.Data;
 using MetroshkaFestival.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -16,8 +17,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using PagedList.Core;
+using Serilog;
 
 namespace MetroshkaFestival.Web.Areas.Admin.Controllers
 {
@@ -27,21 +28,32 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
     public class TournamentController : Controller
     {
         private readonly DataContext _dataContext;
+        private readonly CityService _cityService;
 
-        public TournamentController(DataContext dataContext)
+        public TournamentController(DataContext dataContext, CityService cityService)
         {
             _dataContext = dataContext;
+            _cityService = cityService;
         }
 
         [HttpGet]
-        public IActionResult Index([FromQuery] GetTournamentListQueryModel query, CancellationToken ct)
+        public IActionResult Index([FromQuery] GetTournamentListQueryModel query)
         {
-            GetTournamentListQueryResult result;
+            var tournamentListModel = new TournamentListModel
+            {
+                Query = query,
+                Tournaments = new PagedList<TournamentListItemModel>(
+                    Array.Empty<TournamentListItemModel>().AsQueryable(),
+                    query.Page.NumPage == 0 ? 1 : query.Page.NumPage,
+                    query.Page.RecordsCountPerPage)
+            };
 
             try
             {
                 IQueryable<Tournament> tournamentsQuery = _dataContext.Tournaments
-                    .Include(x => x.City);
+                    .Include(x => x.City)
+                    .Include(x => x.AgeCategories)
+                    .ThenInclude(x => x.Teams);
 
                 if (query.Filter != null)
                 {
@@ -59,187 +71,206 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
                     Name = x.Name,
                     YearOfTour = x.YearOfTour,
                     City = x.City,
-                    CanBeRemoved = x.CanBeRemoved,
+                    CanBeRemoved = x.AgeCategories.Any(c => c.Teams.Count == 0),
                 }).ToArray();
 
-                query.Page.NumPage = Math.Min(query.Page.NumPage, (int) Math.Ceiling((double)tournaments.Length / query.Page.RecordsCountPerPage));
-                var tournamentListModel = new TournamentListModel
+                query.Page.NumPage = Math.Min(query.Page.NumPage,
+                    (int) Math.Ceiling((double) tournaments.Length / query.Page.RecordsCountPerPage));
+                tournamentListModel = new TournamentListModel
                 {
                     Query = query,
                     Tournaments = new PagedList<TournamentListItemModel>(tournaments.AsQueryable(),
                         query.Page.NumPage == 0 ? 1 : query.Page.NumPage,
                         query.Page.RecordsCountPerPage)
                 };
-
-                result = GetTournamentListQueryResult.BuildResult(tournamentListModel);
+            }
+            catch (HttpResponseException e)
+            {
+                if (e.Status == StatusCodes.Status404NotFound)
+                {
+                    throw;
+                }
             }
             catch (Exception e)
             {
                 Log.Error("An error occured while getting tournament list", e);
-                result = GetTournamentListQueryResult.BuildResult(error: e.Message);
-            }
-
-            if (result.Error != null)
-            {
-                throw new Exception(result.Error);
+                tournamentListModel.Error = e.Message;
             }
 
             FillSelected();
-            return View(result.Result);
+            return View(tournamentListModel);
         }
 
         [HttpGet]
-        public async Task<ActionResult> TournamentSummary(string returnUrl, int? tournamentId = null, bool isReadOnly = true)
+        public async Task<ActionResult> TournamentSummary(GetTournamentSummaryQueryModel query)
         {
-            if (tournamentId == null)
-            {
-                var tournamentEditCommand = new AddOrUpdateTournamentCommandRecord(returnUrl);
-
-                FillSelected();
-                return View("TournamentEdit", tournamentEditCommand);
-            }
-
             var tournament = await _dataContext.Tournaments
                 .Include(x => x.City)
-                .Include(x => x.Groups)
-                .ThenInclude(x => x.AgeCategory)
-                .FirstOrDefaultAsync(x => x.Id == tournamentId);
+                .Include(x => x.AgeCategories)
+                .ThenInclude(x => x.Teams)
+                .ThenInclude(x => x.TeamCity)
+                .Include(x => x.AgeCategories)
+                .ThenInclude(x => x.Teams)
+                .ThenInclude(x => x.Players)
+                .FirstOrDefaultAsync(x => x.Id == query.TournamentId);
 
             if (tournament == null)
             {
-                throw new HttpResponseException(404, "Турнир не найден");
-            }
-
-            if (!isReadOnly)
-            {
-                var tournamentEditCommand = new AddOrUpdateTournamentCommandRecord(returnUrl, tournament.Id, tournament.Name, tournament.YearOfTour, tournament.City.Id, tournament.Description);
-                FillSelected();
-                return View("TournamentEdit", tournamentEditCommand);
+                throw new HttpResponseException(StatusCodes.Status404NotFound, TournamentExceptionCodes.NotFound);
             }
 
             var tournamentModel = new TournamentModel
             {
+                Query = query,
                 Id = tournament.Id,
+                TournamentType = tournament.Type,
                 Name = tournament.Name,
                 YearOfTour = tournament.YearOfTour,
                 City = tournament.City,
                 Description = tournament.Description,
-                Groups = tournament.Groups
+                ReturnUrl = query.ReturnUrl
             };
-            return View("TournamentSummary", tournamentModel);
+
+            try
+            {
+                var teams = tournament.AgeCategories.SelectMany(x => x.Teams.Where(t => t.TeamStatus == TeamStatus.Published)).ToArray();
+                if (query.Sort != null)
+                {
+                    teams = query.Sort.Apply(teams).ToArray();
+                }
+
+                tournamentModel.AgeCategories = tournament.AgeCategories;
+                tournamentModel.Teams = teams;
+            }
+            catch (Exception e)
+            {Log.Error("An error occured while getting tournament summary", e);
+                tournamentModel.Error = e.Message;
+                return View("Summary", tournamentModel);
+            }
+
+            return View("Summary", tournamentModel);
+        }
+
+        [HttpGet]
+        public ActionResult GetAddTournamentPage(string returnUrl)
+        {
+            var command = new AddTournamentCommandRecord(returnUrl);
+            FillSelected();
+            return View("Add", command);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddOrUpdateTournament([FromForm] AddOrUpdateTournamentCommandRecord commandRecord, CancellationToken ct)
+        public async Task<ActionResult> AddTournament([FromForm] AddTournamentCommandRecord command,
+            CancellationToken ct)
         {
             if (!ModelState.IsValid)
             {
                 FillSelected();
-                return View("TournamentEdit", commandRecord);
+                return View("Add", command);
             }
 
-            CommandResult result;
             try
             {
-                var tournament = await _dataContext.Tournaments
+                var isAlreadyExists = await _dataContext.Tournaments
                     .Include(x => x.City)
-                    .FirstOrDefaultAsync(x => x.Id == commandRecord.Id, ct);
+                    .AnyAsync(x => x.Type == command.TournamentType &&
+                                   x.City.Id == command.CityId &&
+                                   x.YearOfTour == command.YearOfTour, ct);
 
-                var city = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == commandRecord.CityId.Value, ct);
+                if (isAlreadyExists)
+                {
+                    throw new ApplicationException(TournamentExceptionCodes.AlreadyExist);
+                }
+
+                var city = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == command.CityId.Value, ct);
                 if (city == null)
                 {
-                    throw new Exception(TournamentExceptionCodes.UnknownCity);
+                    throw new ApplicationException(CityExceptionCodes.UnknownCity);
                 }
 
-                var yearOfTour = commandRecord.YearOfTour ?? throw new Exception(TournamentExceptionCodes.YearOfTourIsRequired);
+                var yearOfTour = command.YearOfTour ?? throw new ApplicationException(TournamentExceptionCodes.YearOfTourIsRequired);
+                var tournamentType = command.TournamentType ?? throw new ApplicationException(TournamentExceptionCodes.TournamentTypeIsRequired);
 
-                if (tournament == null)
+                var tournament = new Tournament
                 {
-                    tournament = new Tournament
-                    {
-                        City = city,
-                        YearOfTour = yearOfTour,
-                        Description = commandRecord.Description
-                    };
+                    Type = tournamentType,
+                    City = city,
+                    YearOfTour = yearOfTour,
+                    Description = command.Description,
+                };
 
-                    city.CanBeRemoved = false;
-                    await _dataContext.Tournaments.AddAsync(tournament, ct);
-                    await _dataContext.SaveChangesAsync(ct);
-                    result = AddOrUpdateTournamentCommandResult.BuildResult();
-                }
-                else
+                await _dataContext.Tournaments.AddAsync(tournament, ct);
+                await _dataContext.SaveChangesAsync(ct);
+
+                city.CanBeRemoved = _cityService.CanBeRemoved(city);
+                tournament.AgeCategories.Add(new AgeCategory
                 {
-                    var lastCity = tournament.City;
-                    tournament.City = city;
-                    tournament.YearOfTour = yearOfTour;
-                    tournament.Description = commandRecord.Description;
-                    city.CanBeRemoved = false;
-                    await _dataContext.SaveChangesAsync(ct);
+                    AgeGroup = AgeGroup.Junior,
+                    MinBirthDate = new DateTime(yearOfTour - 11, 1, 1),
+                    MaxBirthDate = new DateTime(yearOfTour - 10, 12, 31)
+                });
 
-                    var canNotBeRemoved = await _dataContext.Tournaments
-                        .Include(x => x.City)
-                        .AnyAsync(x => x.City == lastCity, ct);
-
-                    if (!canNotBeRemoved)
-                    {
-                        lastCity.CanBeRemoved = true;
-                        await _dataContext.SaveChangesAsync(ct);
-                    }
-                    result = AddOrUpdateTournamentCommandResult.BuildResult();
-                }
+                tournament.AgeCategories.Add(new AgeCategory
+                {
+                    AgeGroup = AgeGroup.Senior,
+                    MinBirthDate = new DateTime(yearOfTour - 13, 1, 1),
+                    MaxBirthDate = new DateTime(yearOfTour - 12, 12, 31)
+                });
+                await _dataContext.SaveChangesAsync(ct);
             }
             catch (Exception e)
             {
-                Log.Error("An error occured while adding or updating tournament", e);
-                result = AddOrUpdateTournamentCommandResult.BuildResult(e.Message);
-            }
-
-            if (result.Error != null)
-            {
-                ModelState.AddModelError("AddOrUpdateTournament", result.Error);
+                Log.Error("An error occured while adding tournament", e);
+                ModelState.AddModelError("AddTournament", e.Message);
                 FillSelected();
-                return View("TournamentEdit", commandRecord);
+                return View("Add", command);
             }
 
-            if (!ModelState.IsValid)
-            {
-                ErrorService.Error(ViewData, UnprocessableEntity);
-            }
-
-            return RedirectPermanent(commandRecord.ReturnUrl);
+            return RedirectPermanent(command.ReturnUrl);
         }
 
         [HttpGet]
         public async Task<ActionResult> DeleteTournament(int tournamentId)
         {
             var tournament = await _dataContext.Tournaments
-                .Include(x => x.City).
-                FirstOrDefaultAsync(x => x.Id == tournamentId);
+                .Include(x => x.City)
+                .Include(x => x.AgeCategories)
+                .ThenInclude(x => x.Teams)
+                .FirstOrDefaultAsync(x => x.Id == tournamentId);
 
             if (tournament == null)
             {
-                throw new HttpResponseException(StatusCodes.Status404NotFound);
+                throw new HttpResponseException(StatusCodes.Status404NotFound, TournamentExceptionCodes.NotFound);
             }
 
-            var tournamentCity = tournament.City;
+            if (tournament.AgeCategories.Any(x => x.Teams.Any()))
+            {
+                throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TournamentExceptionCodes.CanNotBeRemoved);
+            }
+
+            var city = tournament.City;
             _dataContext.Tournaments.Remove(tournament);
             await _dataContext.SaveChangesAsync();
 
-            var canNotBeRemoved = await _dataContext.Tournaments
-                .Include(x => x.City)
-                .AnyAsync(x => x.City == tournamentCity);
-
-            if (!canNotBeRemoved)
-            {
-                tournamentCity.CanBeRemoved = true;
-                await _dataContext.SaveChangesAsync();
-            }
+            city.CanBeRemoved = _cityService.CanBeRemoved(city);
+            await _dataContext.SaveChangesAsync();
 
             return RedirectToAction("Index", "Tournament");
         }
 
         private void FillSelected()
         {
+            var tournamentTypeNames = Enum.GetValues(typeof(TournamentType))
+                .Cast<int>()
+                .ToArray();
+
+            var tournamentTypes = tournamentTypeNames.Select(x => new SelectListItem
+            {
+                Value = x.ToString(),
+                Text = $"{((TournamentType) x).AsString(EnumFormat.Description)}"
+            });
+            ViewBag.TournamentTypes = tournamentTypes;
+
             var citiesDictionary = _dataContext.Cities.ToDictionary(key => key.Id, value => value.Name);
             var cityIds = new List<int?> {null};
             cityIds.AddRange(citiesDictionary.Keys.Select(key => (int?) key));

@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MetroshkaFestival.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210529214239_Initial")]
-    partial class Initial
+    [Migration("20210530161855_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,10 +23,8 @@ namespace MetroshkaFestival.Data.Migrations
 
             modelBuilder.Entity("MetroshkaFestival.Data.Entities.AgeCategory", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                    b.Property<int>("TournamentId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("AgeGroup")
                         .HasColumnType("integer");
@@ -37,7 +35,7 @@ namespace MetroshkaFestival.Data.Migrations
                     b.Property<DateTime>("MinBirthDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("Id");
+                    b.HasKey("TournamentId", "AgeGroup");
 
                     b.ToTable("AgeCategories");
                 });
@@ -48,6 +46,11 @@ namespace MetroshkaFestival.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<bool>("CanBeRemoved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -98,59 +101,21 @@ namespace MetroshkaFestival.Data.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int?>("AgeCategoryId")
+                    b.Property<int>("AgeCategoryAgeGroup")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("AgeCategoryTournamentId")
                         .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<int>("Name")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("TournamentId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AgeCategoryId");
-
-                    b.HasIndex("TournamentId");
+                    b.HasIndex("AgeCategoryTournamentId", "AgeCategoryAgeGroup");
 
                     b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("MetroshkaFestival.Data.Entities.Match", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("FirstTeamId")
-                        .IsRequired()
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("GroupId")
-                        .IsRequired()
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("SecondTeamId")
-                        .IsRequired()
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("TournamentId")
-                        .IsRequired()
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FirstTeamId");
-
-                    b.HasIndex("GroupId");
-
-                    b.HasIndex("SecondTeamId");
-
-                    b.HasIndex("TournamentId");
-
-                    b.ToTable("Matches");
                 });
 
             modelBuilder.Entity("MetroshkaFestival.Data.Entities.Player", b =>
@@ -159,9 +124,6 @@ namespace MetroshkaFestival.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -174,23 +136,10 @@ namespace MetroshkaFestival.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Number")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PhotoId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("School")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("TeamId")
-                        .IsRequired()
+                    b.Property<int>("TeamId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PhotoId");
 
                     b.HasIndex("TeamId");
 
@@ -204,11 +153,21 @@ namespace MetroshkaFestival.Data.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int?>("CityId")
+                    b.Property<int>("AgeCategoryAgeGroup")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AgeCategoryTournamentId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SchoolName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TeamCityId")
                         .IsRequired()
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("TeamName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -217,15 +176,11 @@ namespace MetroshkaFestival.Data.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(1);
 
-                    b.Property<DateTime>("Year")
-                        .HasColumnType("timestamp without time zone");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("CityId");
+                    b.HasIndex("TeamCityId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasIndex("AgeCategoryTournamentId", "AgeCategoryAgeGroup");
 
                     b.ToTable("Teams");
                 });
@@ -237,12 +192,22 @@ namespace MetroshkaFestival.Data.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<bool>("CanBeRemoved")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
                     b.Property<int?>("CityId")
                         .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
 
                     b.Property<int>("YearOfTour")
                         .HasColumnType("integer");
@@ -458,82 +423,56 @@ namespace MetroshkaFestival.Data.Migrations
                     b.ToTable("UserTokens");
                 });
 
-            modelBuilder.Entity("MetroshkaFestival.Data.Entities.Group", b =>
+            modelBuilder.Entity("MetroshkaFestival.Data.Entities.AgeCategory", b =>
                 {
-                    b.HasOne("MetroshkaFestival.Data.Entities.AgeCategory", "AgeCategory")
-                        .WithMany()
-                        .HasForeignKey("AgeCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MetroshkaFestival.Data.Entities.Tournament", null)
-                        .WithMany("Groups")
-                        .HasForeignKey("TournamentId");
-
-                    b.Navigation("AgeCategory");
-                });
-
-            modelBuilder.Entity("MetroshkaFestival.Data.Entities.Match", b =>
-                {
-                    b.HasOne("MetroshkaFestival.Data.Entities.Team", "FirstTeam")
-                        .WithMany()
-                        .HasForeignKey("FirstTeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MetroshkaFestival.Data.Entities.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MetroshkaFestival.Data.Entities.Team", "SecondTeam")
-                        .WithMany()
-                        .HasForeignKey("SecondTeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MetroshkaFestival.Data.Entities.Tournament", "Tournament")
-                        .WithMany()
+                        .WithMany("AgeCategories")
                         .HasForeignKey("TournamentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("FirstTeam");
-
-                    b.Navigation("Group");
-
-                    b.Navigation("SecondTeam");
-
                     b.Navigation("Tournament");
+                });
+
+            modelBuilder.Entity("MetroshkaFestival.Data.Entities.Group", b =>
+                {
+                    b.HasOne("MetroshkaFestival.Data.Entities.AgeCategory", "AgeCategory")
+                        .WithMany("Groups")
+                        .HasForeignKey("AgeCategoryTournamentId", "AgeCategoryAgeGroup")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AgeCategory");
                 });
 
             modelBuilder.Entity("MetroshkaFestival.Data.Entities.Player", b =>
                 {
-                    b.HasOne("MetroshkaFestival.Data.Entities.File", "Photo")
-                        .WithMany()
-                        .HasForeignKey("PhotoId");
-
                     b.HasOne("MetroshkaFestival.Data.Entities.Team", "Team")
-                        .WithMany()
+                        .WithMany("Players")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Photo");
 
                     b.Navigation("Team");
                 });
 
             modelBuilder.Entity("MetroshkaFestival.Data.Entities.Team", b =>
                 {
-                    b.HasOne("MetroshkaFestival.Data.Entities.City", "City")
+                    b.HasOne("MetroshkaFestival.Data.Entities.City", "TeamCity")
                         .WithMany()
-                        .HasForeignKey("CityId")
+                        .HasForeignKey("TeamCityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("City");
+                    b.HasOne("MetroshkaFestival.Data.Entities.AgeCategory", "AgeCategory")
+                        .WithMany("Teams")
+                        .HasForeignKey("AgeCategoryTournamentId", "AgeCategoryAgeGroup")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AgeCategory");
+
+                    b.Navigation("TeamCity");
                 });
 
             modelBuilder.Entity("MetroshkaFestival.Data.Entities.Tournament", b =>
@@ -600,9 +539,21 @@ namespace MetroshkaFestival.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MetroshkaFestival.Data.Entities.Tournament", b =>
+            modelBuilder.Entity("MetroshkaFestival.Data.Entities.AgeCategory", b =>
                 {
                     b.Navigation("Groups");
+
+                    b.Navigation("Teams");
+                });
+
+            modelBuilder.Entity("MetroshkaFestival.Data.Entities.Team", b =>
+                {
+                    b.Navigation("Players");
+                });
+
+            modelBuilder.Entity("MetroshkaFestival.Data.Entities.Tournament", b =>
+                {
+                    b.Navigation("AgeCategories");
                 });
 
             modelBuilder.Entity("MetroshkaFestival.Data.Entities.User", b =>

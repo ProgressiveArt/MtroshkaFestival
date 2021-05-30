@@ -11,8 +11,8 @@ namespace MetroshkaFestival.Data.EntityConfiguration
             entity.Property(x => x.Name)
                 .IsRequired();
 
-            entity.Property("AgeCategoryId")
-                .IsRequired();
+            entity.Property("AgeCategoryTournamentId").IsRequired();
+            entity.Property("AgeCategoryAgeGroup").IsRequired();
         }
     }
 }

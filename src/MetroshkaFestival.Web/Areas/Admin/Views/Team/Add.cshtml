@@ -1,0 +1,67 @@
+﻿@model MetroshkaFestival.Application.Commands.Records.Teams.AddTeamCommandRecord
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Добавление команды";
+    ViewData["Controller"] = "Team";
+}
+
+@if (Model.TeamId != null)
+{
+    <h2 class="mt-3 col-sm text-center">Редактирование команды</h2>
+}
+else
+{
+    <h2 class="mt-3 col-sm text-center">Добавление команды</h2>
+}
+
+<form asp-action="AddTeam" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <input data-val="true" asp-for="TeamId" type="hidden" value="@Model?.TeamId"/>
+    <input data-val="true" asp-for="ReturnUrl" type="hidden" value="@Model?.ReturnUrl"/>
+    <input data-val="true" asp-for="TournamentId" type="hidden" value="@Model?.TournamentId"/>
+    <input data-val="true" asp-for="AgeGroupName" type="hidden" value="@Model?.AgeGroupName"/>
+    
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="TeamName" class="input-group-text col-sm-3">Название команды</label>
+        <div class="col-sm-6">
+            <input asp-for="TeamName" class="form-control border-violet" placeholder="Введите название команды"/>
+            <span class="invalid-feedback d-none" asp-validation-for="TeamName" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center">
+        <label asp-for="TeamCityId" class="input-group-text col-sm-3">Город команды</label>
+        <div class="col-sm-6">
+            @Html.DropDownListFor(x => x.TeamCityId, ViewBag.Cities as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
+            <span class="invalid-feedback d-none" asp-validation-for="TeamCityId" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="SchoolName" class="input-group-text col-sm-3">Школа(аббревиатура)</label>
+        <div class="col-sm-6">
+            <input asp-for="SchoolName" class="form-control border-violet" placeholder="Введите аббревиатуру школы" maxlength="15"/>
+            <span class="invalid-feedback d-none" asp-validation-for="SchoolName" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="form-group row justify-content-center">
+        @if (Model.TeamId != null)
+        {
+            <input class="btn btn-success mt-2 col-sm-4" type="submit" value="Обновить"/>
+        }
+        else
+        {
+            <input class="btn btn-success mt-2 col-sm-4" type="submit" value="Добавить"/>
+        }
+        <div class="form-group row justify-content-center mt-2">
+            <a class="btn btn-danger btn-block col-sm-4 text-center" href="@Model?.ReturnUrl">Отменить</a>
+        </div>
+    </div>
+    <div class="row justify-content-sm-center">
+        <div asp-validation-summary="All" class="text-danger row mt-4 col-sm-auto"></div>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script src="~/js/checkInvalid.js"></script>
+}

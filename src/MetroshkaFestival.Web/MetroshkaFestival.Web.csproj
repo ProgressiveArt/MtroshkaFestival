@@ -20,4 +20,10 @@
         <ProjectReference Include="..\MetroshkaFestival.Core\MetroshkaFestival.Core.csproj" />
         <ProjectReference Include="..\MetroshkaFestival.Data\MetroshkaFestival.Data.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\AgeCategory\Add.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\AgeCategory\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Group\Add.cshtml" />
+    </ItemGroup>
 </Project>

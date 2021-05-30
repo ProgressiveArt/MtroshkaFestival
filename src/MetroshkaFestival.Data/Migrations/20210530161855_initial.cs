@@ -4,32 +4,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MetroshkaFestival.Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "AgeCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AgeGroup = table.Column<int>(type: "integer", nullable: false),
-                    MinBirthDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    MaxBirthDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AgeCategories", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Cities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    CanBeRemoved = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -98,36 +84,16 @@ namespace MetroshkaFestival.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Teams",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    CityId = table.Column<int>(type: "integer", nullable: false),
-                    Year = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TeamStatus = table.Column<int>(type: "integer", nullable: false, defaultValue: 1)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Teams_Cities_CityId",
-                        column: x => x.CityId,
-                        principalTable: "Cities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Tournaments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Type = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
                     CityId = table.Column<int>(type: "integer", nullable: false),
                     YearOfTour = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true)
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    CanBeRemoved = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -247,33 +213,21 @@ namespace MetroshkaFestival.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Players",
+                name: "AgeCategories",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FirstName = table.Column<string>(type: "text", nullable: false),
-                    LastName = table.Column<string>(type: "text", nullable: false),
-                    PhotoId = table.Column<int>(type: "integer", nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Number = table.Column<int>(type: "integer", nullable: false),
-                    School = table.Column<string>(type: "text", nullable: false),
-                    TeamId = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true)
+                    TournamentId = table.Column<int>(type: "integer", nullable: false),
+                    AgeGroup = table.Column<int>(type: "integer", nullable: false),
+                    MinBirthDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    MaxBirthDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Players", x => x.Id);
+                    table.PrimaryKey("PK_AgeCategories", x => new { x.TournamentId, x.AgeGroup });
                     table.ForeignKey(
-                        name: "FK_Players_Files_PhotoId",
-                        column: x => x.PhotoId,
-                        principalTable: "Files",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Players_Teams_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "Teams",
+                        name: "FK_AgeCategories_Tournaments_TournamentId",
+                        column: x => x.TournamentId,
+                        principalTable: "Tournaments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -285,62 +239,68 @@ namespace MetroshkaFestival.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<int>(type: "integer", nullable: false),
-                    AgeCategoryId = table.Column<int>(type: "integer", nullable: false),
-                    TournamentId = table.Column<int>(type: "integer", nullable: true)
+                    AgeCategoryTournamentId = table.Column<int>(type: "integer", nullable: false),
+                    AgeCategoryAgeGroup = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Groups", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Groups_AgeCategories_AgeCategoryId",
-                        column: x => x.AgeCategoryId,
+                        name: "FK_Groups_AgeCategories_AgeCategoryTournamentId_AgeCategoryAge~",
+                        columns: x => new { x.AgeCategoryTournamentId, x.AgeCategoryAgeGroup },
                         principalTable: "AgeCategories",
-                        principalColumn: "Id",
+                        principalColumns: new[] { "TournamentId", "AgeGroup" },
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Groups_Tournaments_TournamentId",
-                        column: x => x.TournamentId,
-                        principalTable: "Tournaments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Matches",
+                name: "Teams",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TournamentId = table.Column<int>(type: "integer", nullable: false),
-                    GroupId = table.Column<int>(type: "integer", nullable: false),
-                    FirstTeamId = table.Column<int>(type: "integer", nullable: false),
-                    SecondTeamId = table.Column<int>(type: "integer", nullable: false)
+                    TeamName = table.Column<string>(type: "text", nullable: false),
+                    TeamCityId = table.Column<int>(type: "integer", nullable: false),
+                    SchoolName = table.Column<string>(type: "text", nullable: false),
+                    AgeCategoryTournamentId = table.Column<int>(type: "integer", nullable: false),
+                    AgeCategoryAgeGroup = table.Column<int>(type: "integer", nullable: false),
+                    TeamStatus = table.Column<int>(type: "integer", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Matches", x => x.Id);
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Matches_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
-                        principalColumn: "Id",
+                        name: "FK_Teams_AgeCategories_AgeCategoryTournamentId_AgeCategoryAgeG~",
+                        columns: x => new { x.AgeCategoryTournamentId, x.AgeCategoryAgeGroup },
+                        principalTable: "AgeCategories",
+                        principalColumns: new[] { "TournamentId", "AgeGroup" },
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Matches_Teams_FirstTeamId",
-                        column: x => x.FirstTeamId,
+                        name: "FK_Teams_Cities_TeamCityId",
+                        column: x => x.TeamCityId,
+                        principalTable: "Cities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Players",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    TeamId = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Players", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Players_Teams_TeamId",
+                        column: x => x.TeamId,
                         principalTable: "Teams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Matches_Teams_SecondTeamId",
-                        column: x => x.SecondTeamId,
-                        principalTable: "Teams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Matches_Tournaments_TournamentId",
-                        column: x => x.TournamentId,
-                        principalTable: "Tournaments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -352,39 +312,9 @@ namespace MetroshkaFestival.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Groups_AgeCategoryId",
+                name: "IX_Groups_AgeCategoryTournamentId_AgeCategoryAgeGroup",
                 table: "Groups",
-                column: "AgeCategoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Groups_TournamentId",
-                table: "Groups",
-                column: "TournamentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Matches_FirstTeamId",
-                table: "Matches",
-                column: "FirstTeamId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Matches_GroupId",
-                table: "Matches",
-                column: "GroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Matches_SecondTeamId",
-                table: "Matches",
-                column: "SecondTeamId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Matches_TournamentId",
-                table: "Matches",
-                column: "TournamentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Players_PhotoId",
-                table: "Players",
-                column: "PhotoId");
+                columns: new[] { "AgeCategoryTournamentId", "AgeCategoryAgeGroup" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Players_TeamId",
@@ -408,15 +338,14 @@ namespace MetroshkaFestival.Data.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Teams_CityId",
+                name: "IX_Teams_AgeCategoryTournamentId_AgeCategoryAgeGroup",
                 table: "Teams",
-                column: "CityId");
+                columns: new[] { "AgeCategoryTournamentId", "AgeCategoryAgeGroup" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Teams_Name",
+                name: "IX_Teams_TeamCityId",
                 table: "Teams",
-                column: "Name",
-                unique: true);
+                column: "TeamCityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tournaments_CityId",
@@ -448,7 +377,10 @@ namespace MetroshkaFestival.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Matches");
+                name: "Files");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
 
             migrationBuilder.DropTable(
                 name: "Players");
@@ -467,12 +399,6 @@ namespace MetroshkaFestival.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserTokens");
-
-            migrationBuilder.DropTable(
-                name: "Groups");
-
-            migrationBuilder.DropTable(
-                name: "Files");
 
             migrationBuilder.DropTable(
                 name: "Teams");

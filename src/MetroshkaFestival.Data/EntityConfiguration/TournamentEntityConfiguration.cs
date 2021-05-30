@@ -12,8 +12,19 @@ namespace MetroshkaFestival.Data.EntityConfiguration
                 .IsRequired()
                 .HasDefaultValue(true);
 
+            entity.Property(x => x.Type)
+                .IsRequired()
+                .HasDefaultValue(TournamentType.Default);
+
             entity.Property("CityId")
                 .IsRequired();
+
+            entity
+                .HasMany(e => e.AgeCategories)
+                .WithOne(x => x.Tournament)
+                .HasForeignKey(x => x.TournamentId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

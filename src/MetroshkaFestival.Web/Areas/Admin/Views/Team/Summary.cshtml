@@ -1,0 +1,123 @@
+﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@using MetroshkaFestival.Core.Models.Common
+@model MetroshkaFestival.Application.Queries.Models.Teams.TeamModel
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Профиль команды";
+    ViewData["Controller"] = "Team";
+    var returnUrl = Context.Request.GetUri().AbsoluteUri;
+    var isPublish = Model.TeamStatus == TeamStatus.Published;
+}
+
+<div class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <div class="text-center p-3 row justify-content-center">
+        <span class="h3">Профиль Команды</span><br>
+        <div class="col-sm-auto" style="transform: rotate(0);">
+            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Назад к списку</a>
+        </div>
+    </div>
+    <input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
+
+    <div class="card">
+        <div class="card-header text-center">
+            <h5 class="card-title bg-gradient">Турнир: @Model?.TournamentNameAndCategory</h5>
+        </div>
+        <di class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Название команды: </dt>
+                <dd class="col-sm-9">@Model?.TeamName</dd>
+
+                <dt class="col-sm-3">Город команды: </dt>
+                <dd class="col-sm-9">@Model?.TeamCity.Name</dd>
+
+                <dt class="col-sm-3">Школа: </dt>
+                <dd class="col-sm-9">@Model?.SchoolName</dd>
+
+                <dt class="col-sm-3">Всего игроков: </dt>
+                <dd class="col-sm-9">@Model?.CountMembers</dd>
+
+                <div class="dropdown-divider"></div>
+                <dt class="text-center">Действия</dt>
+                @if (isPublish)
+                {
+                    <small class="text-center">(Нельзя изменять опубликованную команду)</small>
+                }
+                <dt class="mt-sm-3 mb-sm-3">
+                    <div class="text-center col-sm row ">
+                        <div style="transform: rotate(0);" class="col-sm">
+                            <a asp-area="Admin" asp-controller="Team" asp-action="GetAddTeamPage" class="btn btn-primary stretched-link col-sm-10 @(!isPublish ? "" : "disabled")"
+                                       asp-all-route-data="@(new Dictionary<string, string>{
+                                                             {"returnUrl", returnUrl}, {"tournamentId", Model.TournamentId.ToString()},
+                                                             {"ageGroupName", $"{Model.AgeGroupName}"}, {"TeamName", $"{Model.TeamName}"},
+                                                             {"TeamCityId", $"{Model.TeamCity.Id}"}, {"SchoolName", $"{Model.SchoolName}"}, 
+                                                             {"teamId", $"{Model.Id}"}})">
+                                        Изменить
+                                    </a>
+                        </div>
+                        <div style="transform: rotate(0);" class="col-sm">
+                            <a asp-action="UpdateTeamStatus"
+                               asp-all-route-data="@(new Dictionary<string, string>{
+                                                        {"returnUrl", returnUrl}, {"isToPublished", (!isPublish).ToString()},
+                                                        {"teamId", $"{@Model.Id}"}})"
+                               class="btn btn-success stretched-link col-sm-10 @(!isPublish && Model.CountMembers < 12 || !isPublish && Model.CountMembers > 15 ? "disabled" : "")">
+                                @(Model.TeamStatus == TeamStatus.Published ? "Отменить публикацию" : "Опубликовать")
+                            </a>
+                        </div>
+                        <div style="transform: rotate(0);" class="col-sm">
+                            <a asp-action="DeleteTeam" asp-route-teamId="@Model.Id" asp-route-returnUrl="@Model.ReturnUrl"
+                               class="btn btn-danger stretched-link col-sm-10 @(isPublish ? "disabled" : "")" 
+                               onclick=" return confirm('Вы уверены, что хотите удалить команду? \nБудут удалены все игроки, состоящие в ней.'); ">Удалить</a>
+                        </div>
+                    </div>
+                </dt>
+                <div class="dropdown-divider"></div>
+                <dt class="col-sm-12 mt-sm-3 mb-sm-3">
+                <nav>
+                    <div class="nav nav-tabs col-sm-12" id="nav-tab" role="tablist">
+                        <button class="nav-link active col-sm" id="nav-teams-tab" data-bs-toggle="tab" data-bs-target="#nav-teams" type="button" role="tab" aria-controls="nav-teams" aria-selected="false">Игроки <br>
+                            <small class="text-center">(Необходимо инимум 12 и максимум 15 игроков для публикации)</small></button>
+                    </div>
+                </nav>
+
+                <div class="text-center col-sm row ">
+                    <div style="transform: rotate(0);" class="col-sm mt-sm-2 mb-sm-2">
+                        <a class="btn btn-secondary stretched-link col-sm-3 @(Model.TeamStatus == TeamStatus.Published ? "disabled" : "")">Добавить игрока</a>
+                    </div>
+                </div>
+                <div class="text-center d-flex justify-content-center">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="table-dark w-auto">ID</th>
+                            <th scope="col" class="table-dark w-auto">Имя и Фамилия</th>
+                            <th scope="col" class="table-dark w-auto">Номер игрока</th>
+                        </tr>
+                        </thead>
+                        @if (Model.Players.Any())
+                        {
+                            <tbody>
+                            @foreach (var player in Model.Players)
+                            {
+                                <tr>
+                                    <th scope="row" class="p-1 text-center col-sm-1">@player.Id</th>
+                                    <td class="p-1 text-center">@player.FirstName @player.LastName</td>
+                                    <td class="p-1 text-center col-sm-2">@player.NumberInTeam</td>
+                                </tr>
+                            }
+                            </tbody>
+                        }
+                    </table>
+                </div>
+            </dl>
+        </di>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(function(){
+            window.setTimeout(function(){
+                $('#my-alert').alert('close');
+            },15000);
+        });
+    </script>
+}

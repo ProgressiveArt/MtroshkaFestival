@@ -7,5 +7,7 @@ namespace MetroshkaFestival.Data.Entities
         public int Id { get; set; }
         public GroupNames Name { get; set; }
         public AgeCategory AgeCategory { get; set; }
+        // public ICollection<Match> Matches { get; set; } = new List<Match>();
+
     }
 }

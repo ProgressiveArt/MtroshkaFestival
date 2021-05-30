@@ -1,0 +1,205 @@
+﻿@using EnumsNET
+@using MetroshkaFestival.Application.WebModels.Tournaments
+@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@model MetroshkaFestival.Application.Queries.Models.Tournaments.TournamentModel
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Профиль турнира";
+    ViewData["Controller"] = "Tournament";
+    var returnUrl = Context.Request.GetUri().AbsoluteUri;
+}
+
+<div class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <div class="text-center p-3 row justify-content-center">
+        <span class="h3">Профиль турнира</span><br>
+        <div class="col-sm-auto" style="transform: rotate(0);">
+            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Назад к списку</a>
+        </div>
+    </div>
+    <input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
+
+    <div class="card">
+        <div class="card-header text-center">
+            <h5 class="card-title bg-gradient">@Model?.Name</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Тип турнира: </dt>
+                <dd class="col-sm-9">@Model?.TournamentType.AsString(EnumFormat.Description)</dd>
+
+                <dt class="col-sm-3">Год проведения: </dt>
+                <dd class="col-sm-9">@Model?.YearOfTour</dd>
+
+                <dt class="col-sm-3">Город проведения: </dt>
+                <dd class="col-sm-9">@Model?.City.Name</dd>
+
+                <dt class="col-sm-3">Всего команд: </dt>
+                <dd class="col-sm-9">@Model?.Teams.Count</dd>
+                
+                <dt class="col-sm-3">Описание турнира: </dt>
+                <dd class="col-sm-9">@Model?.Description</dd>
+
+                @if (Model.Error != null)
+                {
+                    <div id="my-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div class="">
+                            <div class="text-danger m-0 w-50">@Model.Error</div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="dropdown-divider"></div>
+                    <dt class="col-sm-12 text-center">Команды по возрастным категориям</dt>
+                    <dt class="col-sm-12 mt-sm-3 mb-sm-3">
+                        @if (Model.AgeCategories.Any())
+                        {
+                            <div class="text-center row row-cols-sm-2">
+                                @foreach (var ageCategory in Model.AgeCategories)
+                                {
+                                    <div style="transform: rotate(0);">
+                                        <a asp-area="Admin" asp-controller="Team" asp-action="Index" class="btn btn-outline-primary col-sm stretched-link"
+                                           asp-all-route-data="@(new Dictionary<string, string>{
+                                                                   {"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()},
+                                                                   {"TournamentNameAndCategory", $"{Model?.Name} | {ageCategory.Name}"},
+                                                                   {"AgeGroupName", ageCategory.AgeGroup.AsString(EnumFormat.Name)}
+                                                               })">@ageCategory.Name</a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </dt>
+                    <div class="dropdown-divider"></div>
+                    <dt class="col-sm-12 text-center">Матчи по возрастным категориям</dt>
+                    <dt class="col-sm-12 mt-sm-3 mb-sm-3">
+                        @if (Model.AgeCategories.Any())
+                        {
+                            <div class="text-center row row-cols-sm-2">
+                                @foreach (var ageCategory in Model.AgeCategories)
+                                {
+                                    <div style="transform: rotate(0);">
+                                        <a asp-area="Admin" asp-controller="Team" asp-action="Index" class="btn btn-outline-warning col-sm stretched-link link-dark"
+                                           asp-all-route-data="@(new Dictionary<string, string>{
+                                                                   {"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()},
+                                                                   {"TournamentNameAndCategory", $"{Model?.Name} | {ageCategory.Name}"},
+                                                                   {"AgeGroupName", ageCategory.AgeGroup.AsString(EnumFormat.Name)}
+                                                               })">@ageCategory.Name</a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </dt>
+                    <div class="dropdown-divider"></div>
+                    <dt class="col-sm-12 mt-sm-3 mb-sm-3">
+                        <nav>
+                            <div class="nav nav-tabs col-sm-12" id="nav-tab" role="tablist">
+                                <button class="nav-link active col-sm" id="nav-teams-tab" data-bs-toggle="tab" data-bs-target="#nav-teams" type="button" role="tab" aria-controls="nav-teams" aria-selected="false">Все команды-участники</button>
+                                <button class="nav-link col-sm" id="nav-matches-tab" data-bs-toggle="tab" data-bs-target="#nav-matches" type="button" role="tab" aria-controls="nav-matches" aria-selected="true">Все матчи</button>
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-teams" role="tabpanel" aria-labelledby="nav-teams-tab">
+                                <div class="text-center d-flex justify-content-center">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col" class="table-dark w-auto">
+                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                      sort-name="@TournamentSummaryTeamSortingEnum.Id" class="link-info">
+                                                    ID
+                                                </sort>
+                                            </th>
+                                            <th scope="col" class="table-dark w-auto">
+                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                      sort-name="@TournamentSummaryTeamSortingEnum.Name" class="link-info">
+                                                    Полное названиие
+                                                </sort>
+                                                (
+                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                      sort-name="@TournamentSummaryTeamSortingEnum.TeamName" class="link-info">
+                                                    Команда,
+                                                </sort>
+                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                      sort-name="@TournamentSummaryTeamSortingEnum.SchoolName" class="link-info">
+                                                    Школа
+                                                </sort>)
+                                            </th>
+                                            <th scope="col" class="table-dark w-auto">
+                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                      sort-name="@TournamentSummaryTeamSortingEnum.City" class="link-info">
+                                                    Город команды
+                                                </sort>
+                                            </th>
+                                            <th scope="col" class="table-dark w-auto">
+                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                      sort-name="@TournamentSummaryTeamSortingEnum.CountMembers" class="link-info">
+                                                    Кол-во игроков
+                                                </sort>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        @if (Model.Teams.Any())
+                                        {
+                                            <tbody>
+                                            @foreach (var team in Model.Teams)
+                                            {
+                                                <tr>
+                                                    <th scope="row" class="p-1 text-center">@team.Id</th>
+                                                    <td class="p-1 text-center" style="transform: rotate(0);">
+                                                        <a asp-area="Admin" asp-controller="Team" asp-action="GetTeamSummaryPage" class="stretched-link link-dark" aria-hidden="True"
+                                                           asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Query.TournamentId.ToString()}, {"ageGroupName",team.AgeCategory.AgeGroup.AsString(EnumFormat.Name)}, {"teamId", team.Id.ToString()}, {"tournamentNameAndCategory", $"{Model?.Name} | {team.AgeCategory.Name}"}})">
+                                                            @team.Name
+                                                        </a>
+                                                    </td>
+                                                    <td class="p-1 text-center">@team.TeamCity.Name</td>
+                                                    <td class="p-1 text-center">@team.Players.Count</td>
+                                                </tr>
+                                            }
+                                            </tbody>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-matches" role="tabpanel" aria-labelledby="nav-matches-tab">...</div>
+                            @* <div class="tab-pane fade" id="nav-players" role="tabpanel" aria-labelledby="nav-players-tab"> *@
+                            @*     <div class="text-center d-flex justify-content-center"> *@
+                            @*         <table class="table table-hover"> *@
+                            @*             <thead> *@
+                            @*             <tr> *@
+                            @*                 <th scope="col" class="table-dark w-auto">ID</th> *@
+                            @*                 <th scope="col" class="table-dark w-auto">Имя и Фамилия</th> *@
+                            @*                 <th scope="col" class="table-dark w-auto">Команда</th> *@
+                            @*             </tr> *@
+                            @*             </thead> *@
+                            @*             @if (Model.Players.Any()) *@
+                            @*             { *@
+                            @*                 <tbody> *@
+                            @*                 @foreach (var player in Model.Players) *@
+                            @*                 { *@
+                            @*                     <tr> *@
+                            @*                         <th scope="row" class="p-1 text-center">@player.Id</th> *@
+                            @*                         <td class="p-1 text-center">@player.FirstName @player.LastName</td> *@
+                            @*                         <td class="p-1 text-center">@player.Team.Name</td> *@
+                            @*                     </tr> *@
+                            @*                 } *@
+                            @*                 </tbody> *@
+                            @*             } *@
+                            @*         </table> *@
+                            @*     </div> *@
+                            @* </div> *@
+                        </div>
+                    </dt>
+                }
+            </dl>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(function(){
+            window.setTimeout(function(){
+                $('#my-alert').alert('close');
+            },15000);
+        });
+    </script>
+}

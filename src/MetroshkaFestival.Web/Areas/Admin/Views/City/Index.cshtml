@@ -1,12 +1,12 @@
 ﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
 @model MetroshkaFestival.Application.Queries.Models.Cities.CityListModel
 @{
-    ViewData["Title"] = "Города";
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Города";
     ViewData["Controller"] = "City";
     var returnUrl = Context.Request.GetUri().AbsoluteUri;
 }
 <div class="row">
-    <h2 class="mt-3 col-sm">@ViewBag.Title | Всего: @Model.Cities.Length</h2>
+    <h2 class="mt-3 col-sm">Города | Всего: @Model.Cities.Length</h2>
     <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center">
         <a asp-area="Admin" asp-controller="City" asp-action="GetAddCityPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить город</a>
     </div>
@@ -19,7 +19,7 @@
         <tr>
             <th scope="col" class="table-dark w-auto">ID</th>
             <th scope="col" class="table-dark w-auto">Город</th>
-            <th scope="col" class="table-dark w-25">Действие</th>
+            <th scope="col" class="table-dark col-sm-4">Действие</th>
         </tr>
         </thead>
         @if (Model.Cities.Any())
@@ -33,12 +33,12 @@
                     <td class="p-1 text-center">
                         @if (city.CanBeRemoved)
                         {
-                            <a asp-area="Admin" asp-controller="City" asp-action="DeleteCity" asp-route-cityId="@city.Id" class="btn btn-outline-danger btn-md btn-block w-50">Удалить</a>
+                            <a asp-area="Admin" asp-controller="City" asp-action="DeleteCity" asp-route-cityId="@city.Id" class="btn btn-outline-danger btn-md btn-block ">Удалить</a>
                         }
                         else
                         {
                             <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить использующийся город">
-                                <button class="btn btn-outline-secondary btn-md btn-block w-50" type="button" disabled>Удалить</button>
+                                <button class="btn btn-outline-secondary btn-md btn-block" type="button" disabled>Удалить</button>
                             </span>
                         }
                     </td>
@@ -48,3 +48,22 @@
         }
     </table>
 </div>
+
+@if (Model.Error != null)
+{
+    <div id="my-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="">
+            <div class="text-danger m-0 w-50">@Model.Error</div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    <script>
+        $(function(){
+            window.setTimeout(function(){
+                $('#my-alert').alert('close');
+            },5000);
+        });
+    </script>
+}

@@ -9,17 +9,26 @@ namespace MetroshkaFestival.Data.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<Team> entity)
         {
-            entity.Property(x => x.Name)
+            entity.HasKey(x => x.Id);
+
+            entity.Property(x => x.TeamName)
                 .IsRequired();
 
-            entity.Property("CityId")
+            entity.Property(x => x.SchoolName)
                 .IsRequired();
 
             entity.Property(x => x.TeamStatus)
                 .HasDefaultValue(TeamStatus.AwaitConfirmation);
 
-            entity.HasIndex(x => x.Name)
-                .IsUnique();
+            entity.Property("TeamCityId")
+                .IsRequired();
+
+            entity
+                .HasMany(e => e.Players)
+                .WithOne(x => x.Team)
+                .HasForeignKey(x => x.TeamId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

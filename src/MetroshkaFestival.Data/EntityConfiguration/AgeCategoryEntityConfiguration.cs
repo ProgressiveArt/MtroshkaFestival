@@ -8,9 +8,13 @@ namespace MetroshkaFestival.Data.EntityConfiguration
     {
         public void Configure(EntityTypeBuilder<AgeCategory> entity)
         {
-            entity.Property(x => x.CanBeRemoved)
+            entity.HasKey(x => new {x.TournamentId, x.AgeGroup});
+
+            entity
+                .HasMany(e => e.Teams)
+                .WithOne(x => x.AgeCategory)
                 .IsRequired()
-                .HasDefaultValue(true);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
