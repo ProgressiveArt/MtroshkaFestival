@@ -18,6 +18,6 @@ namespace MetroshkaFestival.Data.Entities
         public ICollection<Group> Groups { get; set; } = new List<Group>();
 
         [NotMapped] public string RangeOfBirthYears => $"{MinBirthDate.Year} - {MaxBirthDate.Year} гг. р.";
-        [NotMapped] public string Name => $"{AgeGroup.AsString(EnumFormat.Description)}-{RangeOfBirthYears}";
+        [NotMapped] public string Name => $"{AgeGroup.AsString(EnumFormat.Description)}:{RangeOfBirthYears}";
     }
 }

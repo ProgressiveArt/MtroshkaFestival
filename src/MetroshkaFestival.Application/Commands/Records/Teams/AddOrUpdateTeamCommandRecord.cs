@@ -3,7 +3,7 @@ using MetroshkaFestival.Core.Exceptions.ExceptionCodes;
 
 namespace MetroshkaFestival.Application.Commands.Records.Teams
 {
-    public record AddTeamCommandRecord(string ReturnUrl,
+    public record AddOrUpdateTeamCommandRecord(string ReturnUrl,
         int TournamentId, string AgeGroupName,
         int? TeamId = null,
         [Required(ErrorMessage = TeamExceptionCodes.NameIsRequired)] string TeamName = null,

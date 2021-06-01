@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using EnumsNET;
 using MetroshkaFestival.Application.Commands.Records.Teams;
-using MetroshkaFestival.Application.Queries.Models.Cities;
 using MetroshkaFestival.Application.Queries.Models.Teams;
 using MetroshkaFestival.Application.Services;
 using MetroshkaFestival.Core.Exceptions.Common;
@@ -132,14 +131,14 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAddTeamPage(AddTeamCommandRecord command)
+        public ActionResult GetAddOrUpdateTeamPage(AddOrUpdateTeamCommandRecord command)
         {
             FillSelected();
             return View("Add", command);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddTeam([FromForm] AddTeamCommandRecord command, CancellationToken ct)
+        public async Task<ActionResult> AddOrUpdateTeam([FromForm] AddOrUpdateTeamCommandRecord command, CancellationToken ct)
         {
             if (!ModelState.IsValid)
             {
@@ -235,20 +234,20 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> UpdateTeamStatus(int teamId, bool isToPublished, string returnUrl)
+        public async Task<ActionResult> UpdateTeamStatus(int teamId, string returnUrl)
         {
             var team = await _dataContext.Teams.Include(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
-            switch (isToPublished)
+            switch (team.Players.Count)
             {
-                case true when team.Players.Count < 12 && team.TeamStatus != TeamStatus.Published:
+                case < 12 when team.TeamStatus != TeamStatus.Published:
                     throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TeamExceptionCodes.MinPlayerCount);
-                case true when team.Players.Count > 15 && team.TeamStatus != TeamStatus.Published:
+                case > 15 when team.TeamStatus != TeamStatus.Published:
                     throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TeamExceptionCodes.MaxPlayerCount);
-                default:
-                    team.TeamStatus = isToPublished ? TeamStatus.Published : TeamStatus.AwaitConfirmation;
-                    await _dataContext.SaveChangesAsync();
-                    return Redirect(returnUrl);
             }
+
+            team.TeamStatus = TeamStatus.Published;
+            await _dataContext.SaveChangesAsync();
+            return Redirect(returnUrl);
         }
 
         [HttpGet]

@@ -1,0 +1,74 @@
+﻿@model MetroshkaFestival.Application.Commands.Records.Players.AddOrUpdatePlayerCommandRecord
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Добавление игрока";
+    ViewData["Controller"] = "Player";
+}
+
+@if (Model.PlayerId != null)
+{
+    <h2 class="mt-3 col-sm text-center">Редактирование игрока</h2>
+}
+else
+{
+    <h2 class="mt-3 col-sm text-center">Добавление игрока</h2>
+}
+
+<form asp-action="AddOrUpdatePlayerPage" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <input data-val="true" asp-for="TeamId" type="hidden" value="@Model?.TeamId"/>
+    <input data-val="true" asp-for="PlayerId" type="hidden" value="@Model?.PlayerId"/>
+    <input data-val="true" asp-for="ReturnUrl" type="hidden" value="@Model?.ReturnUrl"/>
+    
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="FirstName" class="input-group-text col-sm-3">Имя</label>
+        <div class="col-sm-6">
+            <input asp-for="FirstName" class="form-control border-violet" placeholder="Введите имя"/>
+            <span class="invalid-feedback d-none" asp-validation-for="FirstName" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="LastName" class="input-group-text col-sm-3">Фамилия</label>
+        <div class="col-sm-6">
+            <input asp-for="LastName" class="form-control border-violet" placeholder="Введите имя"/>
+            <span class="invalid-feedback d-none" asp-validation-for="LastName" aria-required="true"></span>
+        </div>
+    </div>
+    
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="DateOfBirth" class="input-group-text col-sm-3">Дата рождения</label>
+        <div class="col-sm-6">
+            <input asp-for="DateOfBirth" class="form-control border-violet" placeholder="Введите имя" pattern="dd-mm-yyyy"/>
+            <span class="invalid-feedback d-none" asp-validation-for="DateOfBirth" aria-required="true"></span>
+        </div>
+    </div>
+    
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="NumberInTeam" class="input-group-text col-sm-3">Номер игрока в команде</label>
+        <div class="col-sm-6">
+            <input asp-for="NumberInTeam" class="form-control border-violet" placeholder="Введите номер"/>
+            <span class="invalid-feedback d-none" asp-validation-for="NumberInTeam" aria-required="true"></span>
+        </div>
+    </div>    
+
+    <div class="form-group row justify-content-center">
+        @if (Model.PlayerId != null)
+        {
+            <input class="btn btn-success mt-2 col-sm-4" type="submit" value="Обновить"/>
+        }
+        else
+        {
+            <input class="btn btn-success mt-2 col-sm-4" type="submit" value="Добавить"/>
+        }
+        <div class="form-group row justify-content-center mt-2">
+            <a class="btn btn-danger btn-block col-sm-4 text-center" href="@Model?.ReturnUrl">Отменить</a>
+        </div>
+    </div>
+    <div class="row justify-content-sm-center">
+        <div asp-validation-summary="All" class="text-danger row mt-4 col-sm-auto"></div>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script src="~/js/checkInvalid.js"></script>
+}

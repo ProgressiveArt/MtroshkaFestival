@@ -1,0 +1,42 @@
+﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@model MetroshkaFestival.Application.Queries.Models.Players.PlayerModel
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Профиль игрока";
+    ViewData["Controller"] = "Team";
+    var returnUrl = Context.Request.GetUri().AbsoluteUri;
+}
+
+<div class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <div class="text-center p-3 row justify-content-center">
+        <span class="h3">Профиль Игрока</span><br>
+        <div class="col-sm-auto" style="transform: rotate(0);">
+            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Назад к команде</a>
+        </div>
+    </div>
+    <input data-val="true" asp-for="PlayerId" type="hidden" value="@Model?.PlayerId"/>
+
+    <div class="card">
+        <di class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Имя: </dt>
+                <dd class="col-sm-9">@Model?.FirstName</dd>
+
+                <dt class="col-sm-3">Фамилия: </dt>
+                <dd class="col-sm-9">@Model?.LastName</dd>
+
+                <dt class="col-sm-3">Дата рождения: </dt>
+                <dd class="col-sm-9">@Model?.DateOfBirth</dd>
+
+                <dt class="col-sm-3">Номер игрока в команде: </dt>
+                <dd class="col-sm-9">@Model?.NumberInTeam</dd>
+            </dl>
+        </di>
+        <div style="transform: rotate(0);" class="col-sm mt-sm-2 mb-sm-2 text-center">
+            <a asp-area="Admin" asp-controller="Player" asp-action="GetAddOrUpdatePlayerPage"
+               asp-all-route-data="@(new Dictionary<string, string> {{"ReturnUrl", returnUrl}, {"TeamId", Model.TeamId.ToString()}, {"PlayerId", Model.PlayerId.ToString()}})"
+               class="btn btn-success stretched-link col-sm-3">
+                Изменить
+            </a>
+        </div>
+    </div>
+</div>

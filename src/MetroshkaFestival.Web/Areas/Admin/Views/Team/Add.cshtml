@@ -1,4 +1,4 @@
-﻿@model MetroshkaFestival.Application.Commands.Records.Teams.AddTeamCommandRecord
+﻿@model MetroshkaFestival.Application.Commands.Records.Teams.AddOrUpdateTeamCommandRecord
 @{
     ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Добавление команды";
     ViewData["Controller"] = "Team";
@@ -13,7 +13,7 @@ else
     <h2 class="mt-3 col-sm text-center">Добавление команды</h2>
 }
 
-<form asp-action="AddTeam" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+<form asp-action="AddOrUpdateTeam" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
     <input data-val="true" asp-for="TeamId" type="hidden" value="@Model?.TeamId"/>
     <input data-val="true" asp-for="ReturnUrl" type="hidden" value="@Model?.ReturnUrl"/>
     <input data-val="true" asp-for="TournamentId" type="hidden" value="@Model?.TournamentId"/>
