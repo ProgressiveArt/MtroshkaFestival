@@ -1,9 +1,0 @@
-@using MetroshkaFestival.Web.HtmlHelpers
-@{
-    ViewData["Title"] = "Фестиваль \"Метрошка\"- Главная";
-}
-
-@if (Html.GetRole(User) == "Admin")
-{
-    <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminHome" asp-action="Index">Погнале в админку</a>
-}

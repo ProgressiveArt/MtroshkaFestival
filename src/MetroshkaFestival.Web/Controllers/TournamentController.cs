@@ -20,11 +20,10 @@ using Microsoft.EntityFrameworkCore;
 using PagedList.Core;
 using Serilog;
 
-namespace MetroshkaFestival.Web.Areas.Admin.Controllers
+namespace MetroshkaFestival.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
-    [Area("Admin")]
-    [Route("[area]/[controller]/[action]")]
+    [Route("[controller]/[action]")]
     public class TournamentController : Controller
     {
         private readonly DataContext _dataContext;
@@ -37,6 +36,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index([FromQuery] GetTournamentListQueryModel query)
         {
             var tournamentListModel = new TournamentListModel
@@ -63,6 +63,10 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
                 if (query.Sort != null)
                 {
                     tournamentsQuery = query.Sort.Apply(tournamentsQuery);
+                }
+                else
+                {
+                    tournamentsQuery = tournamentsQuery.OrderBy(x => x.YearOfTour).ThenBy(x => x.City.Name);
                 }
 
                 var tournaments = tournamentsQuery.Select(x => new TournamentListItemModel
@@ -102,6 +106,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult> TournamentSummary(GetTournamentSummaryQueryModel query)
         {
             var tournament = await _dataContext.Tournaments

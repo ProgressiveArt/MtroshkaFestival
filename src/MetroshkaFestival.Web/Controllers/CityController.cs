@@ -14,11 +14,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MetroshkaFestival.Web.Areas.Admin.Controllers
+namespace MetroshkaFestival.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
-    [Area("Admin")]
-    [Route("[area]/[controller]/[action]")]
+    [Route("[controller]/[action]")]
     public class CityController : Controller
     {
         private readonly DataContext _dataContext;

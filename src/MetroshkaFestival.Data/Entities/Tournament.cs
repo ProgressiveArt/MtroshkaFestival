@@ -19,7 +19,7 @@ namespace MetroshkaFestival.Data.Entities
 
         // public ICollection<Match> Matches { get; set; } = new List<Match>();
 
-        [NotMapped] public string Name => $"({Type.AsString(EnumFormat.Description)})МЕТРОШКА-{YearOfTour}:{City.Name}";
+        [NotMapped] public string Name => $"{(Type == TournamentType.SuperCup ? "(" + Type.AsString(EnumFormat.Description) + ")" : "")}МЕТРОШКА-{YearOfTour}:{City.Name}";
     }
 
     public enum TournamentType

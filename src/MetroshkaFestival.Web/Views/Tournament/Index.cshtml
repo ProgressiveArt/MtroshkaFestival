@@ -1,16 +1,23 @@
 ﻿@using MetroshkaFestival.Application.WebModels.Tournaments
+@using MetroshkaFestival.Data.Entities
 @using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@using Microsoft.AspNetCore.Identity
 @model MetroshkaFestival.Application.Queries.Models.Tournaments.TournamentListModel
+@inject SignInManager<User> _signInManager
 @{
-    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Турниры";
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Турниры";
     ViewData["Controller"] = "Tournament";
+    var isAuthenticated = _signInManager?.Context?.User?.Identity?.IsAuthenticated ?? false;
     var returnUrl = Context.Request.GetUri().AbsoluteUri;
 }
 <div class="row">
     <h2 class="mt-3 col-sm">Турниры | Всего: @Model.Tournaments.TotalItemCount</h2>
-    <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center">
-        <a asp-area="Admin" asp-controller="Tournament" asp-action="GetAddTournamentPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить турнир</a>
-    </div>
+    @if (isAuthenticated)
+    {
+        <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center">
+            <a asp-controller="Tournament" asp-action="GetAddTournamentPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить турнир</a>
+        </div>
+    }
     <div class="dropdown-divider"></div>
 </div>
 
@@ -40,7 +47,7 @@
 
     <div class="text-center mt-3 mb-2 col-sm">
         <button class="btn btn-outline-success col-sm-2" type="submit">Поиск</button>
-        <a asp-area="Admin" asp-controller="Tournament" asp-action="Index" class="btn btn-outline-secondary col-sm-2">Сбросить фильтры</a>
+        <a asp-controller="Tournament" asp-action="Index" class="btn btn-outline-secondary col-sm-2">Сбросить фильтры</a>
     </div>
 </form>
 
@@ -69,7 +76,10 @@
                     Год
                 </sort>)
             </th>
-            <th scope="col" class="table-dark col-sm-4">Действие</th>
+            @if (isAuthenticated)
+            {
+                <th scope="col" class="table-dark col-sm-4">Действие</th>
+            }
         </tr>
         </thead>
         @if (Model.Tournaments.Any())
@@ -80,21 +90,26 @@
                 <tr>
                     <th scope="row" class="text-break">@tournamentModel.Id</th>
                     <td style="transform: rotate(0);">
-                        <a asp-area="Admin" asp-controller="Tournament" asp-action="TournamentSummary" class="stretched-link link-dark"
-                           asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", tournamentModel.Id.ToString()}})">@tournamentModel.Name</a>
+                        <a asp-controller="Tournament" asp-action="TournamentSummary" class="stretched-link link-dark"
+                           asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", tournamentModel.Id.ToString()}})">
+                            @tournamentModel.Name
+                        </a>
                     </td>
-                    <td class="p-1 text-center">
-                        @if (tournamentModel.CanBeRemoved)
-                        {
-                            <a asp-area="Admin" asp-controller="Tournament" asp-action="DeleteTournament" asp-route-tournamentId="@tournamentModel.Id" class="btn btn-outline-danger btn-md btn-block">Удалить</a>
-                        }
-                        else
-                        {
-                            <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить турнир имеющий группы">
-                                <button class="btn btn-outline-secondary btn-md btn-block" type="button" disabled>Удалить</button>
-                            </span>
-                        }
-                    </td>
+                    @if (isAuthenticated)
+                    {
+                        <td class="p-1 text-center">
+                            @if (tournamentModel.CanBeRemoved)
+                            {
+                                <a asp-controller="Tournament" asp-action="DeleteTournament" asp-route-tournamentId="@tournamentModel.Id" class="btn btn-outline-danger btn-md btn-block">Удалить</a>
+                            }
+                            else
+                            {
+                                <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить турнир имеющий группы">
+                                    <button class="btn btn-outline-secondary btn-md btn-block" type="button" disabled>Удалить</button>
+                                </span>
+                            }
+                        </td>
+                    }
                 </tr>
             }
             </tbody>

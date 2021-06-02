@@ -25,5 +25,17 @@
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\AgeCategory\Add.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\AgeCategory\Index.cshtml" />
       <_ContentIncludedByDefault Remove="Areas\Admin\Views\Group\Add.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Player\Add.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Player\Summary.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Team\Add.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Team\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Team\Summary.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Tournament\Add.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Tournament\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Tournament\Summary.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\Shared\_ProfileNavBarLayout.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Admin\Views\_ViewStart.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />
     </ItemGroup>
 </Project>

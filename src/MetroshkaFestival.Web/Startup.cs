@@ -125,15 +125,15 @@ namespace MetroshkaFestival.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Account}/{action=SignIn}");
-                //
-                // endpoints.MapControllerRoute(
-                //     name: "default",
-                //     pattern: "{area=Admin}/{controller=AdminHome}/{action=Index}");
+                    name: "/index",
+                    pattern: "{controller=Tournament}/{action=Index}");
 
-                // endpoints.MapControllerRoute(name: "defaults",
-                //     pattern: "{controller}/{action}");
+                endpoints.MapControllerRoute(
+                    name: "/",
+                    pattern: "{controller=Tournament}/{action=Index}");
+
+                endpoints.MapControllerRoute(name: "defaults",
+                    pattern: "{controller}/{action}");
 
                 endpoints.MapControllers();
             });

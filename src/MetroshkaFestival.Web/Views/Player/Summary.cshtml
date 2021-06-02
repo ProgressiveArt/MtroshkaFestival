@@ -1,16 +1,20 @@
 ﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@using Microsoft.AspNetCore.Identity
+@using MetroshkaFestival.Data.Entities
 @model MetroshkaFestival.Application.Queries.Models.Players.PlayerModel
+@inject SignInManager<User> _signInManager
 @{
-    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Профиль игрока";
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Профиль игрока";
     ViewData["Controller"] = "Team";
+    var isAuthenticated = _signInManager?.Context?.User?.Identity?.IsAuthenticated ?? false;
     var returnUrl = Context.Request.GetUri().AbsoluteUri;
 }
 
 <div class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
-    <div class="text-center p-3 row justify-content-center">
-        <span class="h3">Профиль Игрока</span><br>
+    <div class="text-center p-3 row justify-content-between">
+        <span class="h3 col-sm-6 text-start">Профиль Игрока</span><br>
         <div class="col-sm-auto" style="transform: rotate(0);">
-            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Назад к команде</a>
+            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться в профиль команды</a>
         </div>
     </div>
     <input data-val="true" asp-for="PlayerId" type="hidden" value="@Model?.PlayerId"/>
@@ -31,12 +35,15 @@
                 <dd class="col-sm-9">@Model?.NumberInTeam</dd>
             </dl>
         </di>
-        <div style="transform: rotate(0);" class="col-sm mt-sm-2 mb-sm-2 text-center">
-            <a asp-area="Admin" asp-controller="Player" asp-action="GetAddOrUpdatePlayerPage"
-               asp-all-route-data="@(new Dictionary<string, string> {{"ReturnUrl", returnUrl}, {"TeamId", Model.TeamId.ToString()}, {"PlayerId", Model.PlayerId.ToString()}})"
-               class="btn btn-success stretched-link col-sm-3">
-                Изменить
-            </a>
-        </div>
+        @if (isAuthenticated)
+        {
+            <div style="transform: rotate(0);" class="col-sm mt-sm-2 mb-sm-2 text-center">
+                <a asp-controller="Player" asp-action="GetAddOrUpdatePlayerPage"
+                   asp-all-route-data="@(new Dictionary<string, string> {{"ReturnUrl", returnUrl}, {"TeamId", Model.TeamId.ToString()}, {"PlayerId", Model.PlayerId.ToString()}})"
+                   class="btn btn-success stretched-link col-sm-3">
+                    Изменить
+                </a>
+            </div>
+        }
     </div>
 </div>

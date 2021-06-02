@@ -2,11 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using EnumsNET;
 using MetroshkaFestival.Application.Commands.Records.Players;
-using MetroshkaFestival.Application.Commands.Records.Teams;
 using MetroshkaFestival.Application.Queries.Models.Players;
-using MetroshkaFestival.Application.Queries.Models.Teams;
 using MetroshkaFestival.Core.Exceptions.Common;
 using MetroshkaFestival.Core.Exceptions.ExceptionCodes;
 using MetroshkaFestival.Core.Models.Common;
@@ -18,11 +15,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MetroshkaFestival.Web.Areas.Admin.Controllers
+namespace MetroshkaFestival.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
-    [Area("Admin")]
-    [Route("[area]/[controller]/[action]")]
+    [Route("[controller]/[action]")]
     public class PlayerController : Controller
     {
         private readonly DataContext _dataContext;
@@ -33,6 +29,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult GetPlayerSummaryPage(GetPlayerSummaryQueryModel query)
         {
             var team = _dataContext.Teams.Include(x => x.Players).FirstOrDefault(x => x.Id == query.TeamId);

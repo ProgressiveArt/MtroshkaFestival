@@ -1,14 +1,14 @@
 ﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
 @model MetroshkaFestival.Application.Queries.Models.Cities.CityListModel
 @{
-    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Города";
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Города";
     ViewData["Controller"] = "City";
     var returnUrl = Context.Request.GetUri().AbsoluteUri;
 }
 <div class="row">
     <h2 class="mt-3 col-sm">Города | Всего: @Model.Cities.Length</h2>
     <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center">
-        <a asp-area="Admin" asp-controller="City" asp-action="GetAddCityPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить город</a>
+        <a asp-controller="City" asp-action="GetAddCityPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить город</a>
     </div>
     <div class="dropdown-divider"></div>
 </div>
@@ -33,7 +33,7 @@
                     <td class="p-1 text-center">
                         @if (city.CanBeRemoved)
                         {
-                            <a asp-area="Admin" asp-controller="City" asp-action="DeleteCity" asp-route-cityId="@city.Id" class="btn btn-outline-danger btn-md btn-block ">Удалить</a>
+                            <a asp-controller="City" asp-action="DeleteCity" asp-route-cityId="@city.Id" class="btn btn-outline-danger btn-md btn-block ">Удалить</a>
                         }
                         else
                         {

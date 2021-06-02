@@ -3,16 +3,16 @@
 @using Microsoft.ApplicationInsights.AspNetCore.Extensions
 @model MetroshkaFestival.Application.Queries.Models.Tournaments.TournamentModel
 @{
-    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Профиль турнира";
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Профиль турнира";
     ViewData["Controller"] = "Tournament";
     var returnUrl = Context.Request.GetUri().AbsoluteUri;
 }
 
 <div class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
-    <div class="text-center p-3 row justify-content-center">
-        <span class="h3">Профиль турнира</span><br>
+    <div class="text-center p-3 row justify-content-between">
+        <span class="h3 col-sm-6 text-start">Профиль турнира</span><br>
         <div class="col-sm-auto" style="transform: rotate(0);">
-            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Назад к списку</a>
+            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться к списку турниров</a>
         </div>
     </div>
     <input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
@@ -57,7 +57,7 @@
                                 @foreach (var ageCategory in Model.AgeCategories)
                                 {
                                     <div style="transform: rotate(0);">
-                                        <a asp-area="Admin" asp-controller="Team" asp-action="Index" class="btn btn-outline-primary col-sm stretched-link"
+                                        <a asp-controller="Team" asp-action="Index" class="btn btn-outline-primary col-sm stretched-link"
                                            asp-all-route-data="@(new Dictionary<string, string>{
                                                                    {"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()},
                                                                    {"TournamentNameAndCategory", $"{Model?.Name} | {ageCategory.Name}"},
@@ -77,7 +77,7 @@
                                 @foreach (var ageCategory in Model.AgeCategories)
                                 {
                                     <div style="transform: rotate(0);">
-                                        <a asp-area="Admin" asp-controller="Team" asp-action="Index" class="btn btn-outline-warning col-sm stretched-link link-dark"
+                                        <a asp-controller="Team" asp-action="Index" class="btn btn-outline-warning col-sm stretched-link link-dark"
                                            asp-all-route-data="@(new Dictionary<string, string>{
                                                                    {"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()},
                                                                    {"TournamentNameAndCategory", $"{Model?.Name} | {ageCategory.Name}"},
@@ -145,7 +145,7 @@
                                                 <tr>
                                                     <th scope="row" class="p-1 text-center">@team.Id</th>
                                                     <td class="p-1 text-center" style="transform: rotate(0);">
-                                                        <a asp-area="Admin" asp-controller="Team" asp-action="GetTeamSummaryPage" class="stretched-link link-dark" aria-hidden="True"
+                                                        <a asp-controller="Team" asp-action="GetTeamSummaryPage" class="stretched-link link-dark" aria-hidden="True"
                                                            asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Query.TournamentId.ToString()}, {"ageGroupName",team.AgeCategory.AgeGroup.AsString(EnumFormat.Name)}, {"teamId", team.Id.ToString()}, {"tournamentNameAndCategory", $"{Model?.Name} | {team.AgeCategory.Name}"}})">
                                                             @team.Name
                                                         </a>

@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MetroshkaFestival.Web.Areas.Admin.Controllers
+namespace MetroshkaFestival.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
-    [Area("Admin")]
-    [Route("[area]/main")]
+    [Route("/main")]
     public class AdminHomeController : Controller
     {
         [HttpGet, Route("")]

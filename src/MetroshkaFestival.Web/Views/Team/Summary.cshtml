@@ -1,0 +1,180 @@
+﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
+@using MetroshkaFestival.Core.Models.Common
+@using MetroshkaFestival.Data.Entities
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> _signInManager
+@model MetroshkaFestival.Application.Queries.Models.Teams.TeamModel
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Профиль команды";
+    ViewData["Controller"] = "Team";
+    var isAuthenticated = _signInManager?.Context?.User?.Identity?.IsAuthenticated ?? false;
+    var returnUrl = Context.Request.GetUri().AbsoluteUri;
+    var isPublish = Model.TeamStatus == TeamStatus.Published;
+}
+
+<div class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
+    <div class="text-center p-3 row justify-content-between">
+        <span class="h3 col-sm-6 text-start">Профиль Команды</span><br>
+        <div class="col-sm-auto" style="transform: rotate(0);">
+            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться к списку команд</a>
+        </div>
+    </div>
+    <input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
+
+    <div class="card">
+        <div class="card-header text-center">
+            <h5 class="card-title bg-gradient">Турнир: @Model?.TournamentNameAndCategory</h5>
+        </div>
+        <di class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Название команды: </dt>
+                <dd class="col-sm-9">@Model?.TeamName</dd>
+
+                <dt class="col-sm-3">Город команды: </dt>
+                <dd class="col-sm-9">@Model?.TeamCity.Name</dd>
+
+                <dt class="col-sm-3">Школа: </dt>
+                <dd class="col-sm-9">@Model?.SchoolName</dd>
+
+                <dt class="col-sm-3">Всего игроков: </dt>
+                <dd class="col-sm-9">@Model?.CountMembers</dd>
+
+                @if (isAuthenticated)
+                {
+                    <div class="dropdown-divider"></div>
+                    <dt class="text-center">Действия</dt>
+                    @if (!isPublish)
+                    {
+                        <small class="text-center">(Нельзя изменять опубликованную команду)</small>
+                    }
+                    <dt class="mt-sm-3 mb-sm-3">
+                        <div class="text-center col-sm row ">
+                            @if (!isPublish)
+                            {
+                                <div style="transform: rotate(0);" class="col-sm">
+                                    <a asp-controller="Team" asp-action="GetAddOrUpdateTeamPage" class="btn btn-primary stretched-link col-sm-10"
+                                       asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.TournamentId.ToString()}, {"ageGroupName", $"{Model.AgeGroupName}"}, {"TeamName", $"{Model.TeamName}"}, {"TeamCityId", $"{Model.TeamCity.Id}"}, {"SchoolName", $"{Model.SchoolName}"}, {"teamId", $"{Model.Id}"}})">
+                                        Изменить
+                                    </a>
+                                </div>
+                                <div style="transform: rotate(0);" class="col-sm">
+                                    <a asp-action="UpdateTeamStatus"
+                                       asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"teamId", $"{@Model.Id}"}})"
+                                       class="btn btn-success stretched-link col-sm-10 @(Model.CountMembers < 12 || Model.CountMembers > 15 ? "disabled" : "")"
+                                       onclick=" return confirm('Вы уверены, что все данные указаны корректно? \nОтменить это действие и изменять данные о команде будет невозможно. \nОстанется возможность редактирования игроков.'); ">
+                                        Опубликовать
+                                    </a>
+                                </div>
+                                <div style="transform: rotate(0);" class="col-sm">
+                                    <a asp-action="DeleteTeam" asp-route-teamId="@Model.Id" asp-route-returnUrl="@Model.ReturnUrl"
+                                       class="btn btn-danger stretched-link col-sm-10"
+                                       onclick=" return confirm('Вы уверены, что хотите удалить команду? \nБудут удалены все игроки, состоящие в ней.'); ">
+                                        Удалить
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <h3>Команда уже опубликована</h3>
+                            }
+                        </div>
+                    </dt>
+                    <div class="dropdown-divider"></div>
+                    <nav>
+                        <div class="nav nav-tabs col-sm-12" id="nav-tab" role="tablist">
+                            <button class="nav-link active col-sm disabled" id="nav-teams-tab" data-bs-toggle="tab" data-bs-target="#nav-teams" type="button" role="tab" aria-controls="nav-teams" aria-selected="false">
+                                Игроки <br>
+                                <small class="text-center">(Необходимо минимум 12 и максимум 15 игроков для публикации)</small>
+                            </button>
+                        </div>
+                    </nav>
+                    <div class="text-center col-sm row ">
+                        <div style="transform: rotate(0);" class="col-sm mt-sm-2 mb-sm-2">
+                            <a asp-controller="Player" asp-action="GetAddOrUpdatePlayerPage"
+                               asp-all-route-data="@(new Dictionary<string, string> {{"ReturnUrl", returnUrl}, {"TeamId", Model.Id.ToString()}})"
+                               class="btn btn-secondary stretched-link col-sm-3 @(Model.CountMembers > 14 ? "disabled" : "")">
+                                Добавить игрока
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="dropdown-divider"></div>
+                    <nav>
+                        <div class="nav nav-tabs col-sm-12" id="nav-tab" role="tablist">
+                            <button class="nav-link active col-sm disabled" id="nav-teams-tab" data-bs-toggle="tab" data-bs-target="#nav-teams" type="button" role="tab" aria-controls="nav-teams" aria-selected="false">
+                                Игроки
+                            </button>
+                        </div>
+                    </nav>
+                }
+
+                <div class="text-center d-flex justify-content-center">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col" class="table-dark w-auto">ID</th>
+                            <th scope="col" class="table-dark w-auto">Имя и Фамилия</th>
+                            <th scope="col" class="table-dark w-auto">Номер игрока</th>
+                            @if (isAuthenticated)
+                            {
+                                <th scope="col" class="table-dark col-sm-4">Действие</th>
+                            }
+                        </tr>
+                        </thead>
+                        @if (Model.Players.Any())
+                        {
+                            <tbody>
+                            @foreach (var player in Model.Players)
+                            {
+                                <tr>
+                                    <th scope="row" class="p-1 text-center col-sm-1">@player.Id</th>
+                                    <td class="p-1 text-center" style="transform: rotate(0);">
+                                        <a asp-controller="Player" asp-action="GetPlayerSummaryPage"
+                                           asp-all-route-data="@(new Dictionary<string, string> {{"ReturnUrl", returnUrl}, {"TeamId", Model.Id.ToString()}, {"PlayerId", player.Id.ToString()}})"
+                                           class="stretched-link col-sm-3 text-decoration-none">
+                                            @player.FirstName @player.LastName
+                                        </a>
+
+                                    </td>
+                                    <td class="p-1 text-center col-sm-2">@player.NumberInTeam</td>
+                                    @if (isAuthenticated)
+                                    {
+                                        <td class="p-1 text-center col-sm-2">
+                                            @if (!isPublish)
+                                            {
+                                                <a asp-controller="Player" asp-action="DeletePlayer"
+                                                   asp-all-route-data="@(new Dictionary<string, string> {{"ReturnUrl", returnUrl}, {"TeamId", Model.Id.ToString()}, {"PlayerId", player.Id.ToString()}})"
+                                                   class="btn btn-outline-danger btn-md btn-block">
+                                                    Удалить
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span tabindex="0" data-bs-toggle="tooltip" title="Невозможно удалить игрока из опубликованной команды">
+                                                    <button class="btn btn-outline-secondary btn-md btn-block" type="button" disabled>Удалить</button>
+                                                </span>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            </tbody>
+                        }
+                    </table>
+                </div>
+            </dl>
+        </di>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(function(){
+            window.setTimeout(function(){
+                $('#my-alert').alert('close');
+            },15000);
+        });
+    </script>
+}

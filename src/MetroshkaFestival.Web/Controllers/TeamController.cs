@@ -19,11 +19,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-namespace MetroshkaFestival.Web.Areas.Admin.Controllers
+namespace MetroshkaFestival.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
-    [Area("Admin")]
-    [Route("[area]/[controller]/[action]")]
+    [Route("[controller]/[action]")]
     public class TeamController : Controller
     {
         private readonly DataContext _dataContext;
@@ -36,6 +35,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index([FromQuery] GetTeamListQueryModel query)
         {
             var teamListModel = new TeamListModel
@@ -97,6 +97,7 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult GetTeamSummaryPage(string returnUrl, int tournamentId, string ageGroupName,
             int teamId, string tournamentNameAndCategory)
         {
@@ -108,6 +109,11 @@ namespace MetroshkaFestival.Web.Areas.Admin.Controllers
                 .FirstOrDefault(x => x.Id == teamId);
 
             if (team == null)
+            {
+                throw new HttpResponseException(StatusCodes.Status404NotFound, TeamExceptionCodes.NotFound);
+            }
+
+            if (!(User?.Identity?.IsAuthenticated ?? true) && team.TeamStatus == TeamStatus.AwaitConfirmation)
             {
                 throw new HttpResponseException(StatusCodes.Status404NotFound, TeamExceptionCodes.NotFound);
             }

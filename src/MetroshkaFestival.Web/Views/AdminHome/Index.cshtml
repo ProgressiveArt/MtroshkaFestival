@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using MetroshkaFestival.Data.Entities
+@inject SignInManager<User> _signInManager
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения";
+    var isAuthorized = _signInManager?.Context?.User?.Identity?.IsAuthenticated ?? false;
+}
+
+<h2 class="text-center pt-3">Администрирование приложения</h2>
+<div class="dropdown-divider"></div>
+<nav class="navbar navbar-light bg-light justify-content-center">
+
+    <div class="text-center mt-3">
+        <div class="col-sm">
+            <button type="button" class="btn btn-secondary mt-2 w-100" style="transform: rotate(0);">
+                @Html.ActionLink("Города", "Index", "City", new {@class = "stretched-link link-light"})
+            </button>
+        </div>
+        <div class="col-sm">
+            <button type="button" class="btn btn-secondary mt-2 w-100" style="transform: rotate(0);">
+                @Html.ActionLink("Турниры", "Index", "Tournament", new {@class = "stretched-link link-light"})
+            </button>
+        </div>
+    </div>
+</nav>

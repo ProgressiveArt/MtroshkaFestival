@@ -7,7 +7,7 @@ using Serilog;
 
 namespace MetroshkaFestival.Web.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
         private readonly UserService _userService;
@@ -20,7 +20,7 @@ namespace MetroshkaFestival.Web.Controllers
         [HttpGet]
         public IActionResult SignIn()
         {
-            return User.Identity.IsAuthenticated ? RedirectToAction("Index", "AdminHome") : View();
+            return User?.Identity?.IsAuthenticated ?? false ? RedirectToAction("Index", "AdminHome") : View();
         }
 
         [HttpPost]
@@ -42,7 +42,7 @@ namespace MetroshkaFestival.Web.Controllers
                 return View(command);
             }
 
-            return RedirectToRoute(new { area="Admin", controller="AdminHome", action="Index"});
+            return RedirectToRoute(new { controller="AdminHome", action="Index"});
         }
 
         [HttpGet]
@@ -50,7 +50,7 @@ namespace MetroshkaFestival.Web.Controllers
         public new async Task<IActionResult> SignOut()
         {
             await _userService.SignOut();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Tournament");
         }
     }
 }
