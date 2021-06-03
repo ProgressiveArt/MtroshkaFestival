@@ -19,7 +19,7 @@
     <div class="input-group justify-content-center mt-3 mb-3" @(Model.IsTournamentOver ? "hidden disabled" : "")>
         <label asp-for="IsSetOpenUntilDate" class="input-group-text col-sm-4">Новая дата завершения турнира</label>
         <div class="col-sm-6">
-            <input asp-for="IsSetOpenUntilDate" class="form-control border-violet" type="date">
+            <input asp-for="IsSetOpenUntilDate" class="form-control border-violet" type="datetime-local">
             <span class="invalid-feedback d-none" asp-validation-for="IsSetOpenUntilDate" aria-required="true"></span>
         </div>
     </div>

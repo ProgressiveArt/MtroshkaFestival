@@ -20,7 +20,7 @@
             @if (Html.GetLogin(User) != "Anonim")
             {
                 <div class="col-sm-auto">
-                    <a class="text-decoration-none navbar-brand" asp-controller="AdminHome" asp-action="Index">Admin panel</a>
+                    <a class="text-decoration-none navbar-brand" asp-controller="AdminHome" asp-action="Index">Фестиваль "МЕТРОШКА" - Management</a>
                     </div>
                 <div class="col-sm">
                     <div class="nav nav-pills row p-0 mt-1 mb-1">
@@ -32,10 +32,7 @@
             }
             else
             {
-                <a class="navbar-brand col-sm" asp-controller="Tournament" asp-action="Index">Фестиваль "МЕТРОШКА"</a>
-                <div class="col-sm">
-                    
-                </div>
+                <a class="navbar-brand col-sm text-center" asp-controller="Tournament" asp-action="Index">Фестиваль "МЕТРОШКА"</a>
             }
         </div>
     </nav>

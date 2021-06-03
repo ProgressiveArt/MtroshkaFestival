@@ -135,7 +135,7 @@ namespace MetroshkaFestival.Web.Controllers
                 TournamentIsOver = team.AgeCategory.Tournament.IsTournamentOver,
                 ReturnUrl = returnUrl,
                 AgeGroupName = team.AgeCategory.AgeGroup.AsString(EnumFormat.Name),
-                Players = team.Players.OrderBy(x => x.FirstName + x.LastName).ToArray()
+                Players = team.Players.OrderBy(x => x.NumberInTeam).ToArray()
             };
 
             return View("Summary", model);
