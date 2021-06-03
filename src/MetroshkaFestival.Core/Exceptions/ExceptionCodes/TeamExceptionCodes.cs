@@ -13,5 +13,7 @@
 
         public const string NameIsRequired = "Не указано название команды";
         public const string SchoolNameIsRequired = "Не указано название учебного заведения";
+        public const string CallBackEmailIsRequired = "Email для обратной связи обязателен";
+        public const string PlayersIsRequired = "Нельзя создать команду без игроков";
     }
 }

@@ -1,0 +1,57 @@
+﻿@model MetroshkaFestival.Application.Commands.Records.Tournaments.UpdateTournamentCommandRecord
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Изменение турнира";
+    ViewData["Controller"] = "Tournament";
+}
+
+<div class="text-center p-3 row">
+    <span class="h3">Изменение турнира</span>
+    @if (Model.IsTournamentOver)
+    {
+        <small>Невозможно менять завершенный турнир</small>
+    }
+</div>
+
+<form asp-action="UpdateTournament" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2 justify-content-center" enctype="multipart/form-data">
+    <input data-val="true" asp-for="ReturnUrl" type="hidden" value="@Model?.ReturnUrl"/>
+    <input data-val="true" asp-for="TournamentId" type="hidden" value="@Model?.TournamentId"/>
+
+    <div class="input-group justify-content-center mt-3 mb-3" @(Model.IsTournamentOver ? "hidden disabled" : "")>
+        <label asp-for="IsSetOpenUntilDate" class="input-group-text col-sm-4">Новая дата завершения турнира</label>
+        <div class="col-sm-6">
+            <input asp-for="IsSetOpenUntilDate" class="form-control border-violet" type="date">
+            <span class="invalid-feedback d-none" asp-validation-for="IsSetOpenUntilDate" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="IsTournamentOver" class="input-group-text col-sm-3 me-2">Турнир завершен?</label>
+        <div class="col-sm-auto">
+            <input asp-for="IsTournamentOver" type="checkbox">
+            <span class="invalid-feedback d-none" asp-validation-for="IsTournamentOver" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center mt-3 mb-3" @(Model.IsTournamentOver ? "hidden disabled" : "")>
+        <label asp-for="IsHiddenFromPublic" class="input-group-text col-sm-3 me-2">Показывать всем?</label>
+        <div class="col-sm-auto">
+            <input asp-for="IsHiddenFromPublic" type="checkbox">
+            <span class="invalid-feedback d-none" asp-validation-for="IsHiddenFromPublic" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="form-group row justify-content-center">
+        <input class="btn btn-success mt-2 col-sm-4" type="submit" onclick=" return confirm('Если выставлен статус турнира - Завершен, то редактировать его будет больше невозможно!'); "value="Применить изменения"/>
+        <div class="form-group row justify-content-center mt-2">
+            <a class="btn btn-danger btn-block col-sm-4 text-center" href="@Model.ReturnUrl">Отменить</a>
+        </div>
+    </div>
+    <div class="row justify-content-sm-center">
+        <div asp-validation-summary="All" class="text-danger row mt-4 w-50"></div>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script src="~/js/checkInvalid.js"></script>
+}

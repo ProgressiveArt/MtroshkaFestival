@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MetroshkaFestival.Application.WebModels.Filters;
 using MetroshkaFestival.Application.WebModels.Tournaments;
 using MetroshkaFestival.Core.Models.Common;
@@ -26,8 +27,11 @@ namespace MetroshkaFestival.Application.Queries.Models.Tournaments
         public int Id { get; set; }
         public string Name { get; set; }
         public int YearOfTour  { get; set; }
+        public int CountRequests  { get; set; }
         public City City { get; set; }
         public TournamentType TournamentType { get; set; }
+        public DateTime IsSetOpenUntilDate { get; set; }
+        public bool IsTournamentOver { get; set; }
         public bool CanBeRemoved { get; set; }
     }
 }

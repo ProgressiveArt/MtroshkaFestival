@@ -20,5 +20,6 @@ namespace MetroshkaFestival.Application.Queries.Models.Players
         public DateTime DateOfBirth { get; set; }
         public int NumberInTeam { get; set; }
         public int TeamId { get; set; }
+        public bool TournamentIsOver { get; set; }
     }
 }

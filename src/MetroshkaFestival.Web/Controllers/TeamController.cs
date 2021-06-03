@@ -48,6 +48,7 @@ namespace MetroshkaFestival.Web.Controllers
             {
                 Enum.TryParse<AgeGroup>(query.AgeGroupName, ignoreCase: true, out var ageGroup);
                 var ageCategory = _dataContext.AgeCategories
+                    .Include(x => x.Tournament)
                     .Include(x => x.Teams)
                     .ThenInclude(x => x.TeamCity)
                     .Include(x => x.Teams)
@@ -79,6 +80,8 @@ namespace MetroshkaFestival.Web.Controllers
                     TeamStatus = x.TeamStatus,
                     CountMembers = x.Players.Count
                 }).ToArray();
+
+                teamListModel.TournamentIsOver = ageCategory.Tournament.IsTournamentOver;
             }
             catch (HttpResponseException e)
             {
@@ -106,6 +109,7 @@ namespace MetroshkaFestival.Web.Controllers
                 .Include(x => x.TeamCity)
                 .Include(x => x.Players)
                 .Include(x => x.AgeCategory)
+                .ThenInclude(x => x.Tournament)
                 .FirstOrDefault(x => x.Id == teamId);
 
             if (team == null)
@@ -128,6 +132,7 @@ namespace MetroshkaFestival.Web.Controllers
                 CountMembers = team.Players.Count,
                 TournamentNameAndCategory = tournamentNameAndCategory,
                 TournamentId = tournamentId,
+                TournamentIsOver = team.AgeCategory.Tournament.IsTournamentOver,
                 ReturnUrl = returnUrl,
                 AgeGroupName = team.AgeCategory.AgeGroup.AsString(EnumFormat.Name),
                 Players = team.Players.OrderBy(x => x.FirstName + x.LastName).ToArray()
@@ -140,16 +145,25 @@ namespace MetroshkaFestival.Web.Controllers
         public ActionResult GetAddOrUpdateTeamPage(AddOrUpdateTeamCommandRecord command)
         {
             FillSelected();
-            return View("Add", command);
+            return View("AddOrUpdate", command);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult GetAddRequestToTourPage(AddRequestToTourCommandRecord command)
+        {
+            FillSelected();
+            return View("AddRequestToTour", command);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddOrUpdateTeam([FromForm] AddOrUpdateTeamCommandRecord command, CancellationToken ct)
+        [AllowAnonymous]
+        public async Task<ActionResult> AddRequestToTour([FromForm] AddRequestToTourCommandRecord command, CancellationToken ct)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || command.Error != null)
             {
                 FillSelected();
-                return View("Add", command);
+                return View("AddRequestToTour", command);
             }
 
             try
@@ -158,11 +172,123 @@ namespace MetroshkaFestival.Web.Controllers
                 var ageCategory = await _dataContext.AgeCategories
                     .Include(x => x.Teams)
                     .ThenInclude(x => x.TeamCity)
+                    .Include(x => x.Tournament)
                     .FirstOrDefaultAsync(x => x.TournamentId == command.TournamentId && x.AgeGroup == ageGroup, ct);
 
                 if (ageCategory == null)
                 {
                     throw new HttpResponseException(StatusCodes.Status404NotFound, TournamentExceptionCodes.AgeCategoryNotFound);
+                }
+
+                if (ageCategory.Tournament.IsTournamentOver)
+                {
+                    throw new Exception(TournamentExceptionCodes.CanNotBeUpdated);
+                }
+
+                var city = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == command.TeamCityId.Value, ct);
+                if (city == null)
+                {
+                    throw new ApplicationException(CityExceptionCodes.UnknownCity);
+                }
+
+                var isAlreadyExists = ageCategory.Teams.Any(x => x.TeamName.ToUpper() == command.TeamName.ToUpper() &&
+                                                                 x.TeamCity == city &&
+                                                                 x.SchoolName.ToUpper() ==
+                                                                 command.SchoolName.ToUpper());
+
+                if (isAlreadyExists)
+                {
+                    throw new ApplicationException(TeamExceptionCodes.AlreadyExist);
+                }
+
+                var team = new Team
+                {
+                    TeamName = command.TeamName,
+                    TeamCity = city,
+                    SchoolName = command.SchoolName
+                };
+
+                var players = new List<Player>();
+                foreach (var player in command.Players)
+                {
+                    var playerIsAlreadyExists =  players
+                        .Any(x => x.FirstName.ToUpper() == player.FirstName.ToUpper()
+                             && x.LastName.ToUpper() == player.LastName.ToUpper()
+                             && x.DateOfBirth == player.DateOfBirth);
+
+                    var numberIsAlreadyInUse = players.Any(x => x.NumberInTeam == player.NumberInTeam);
+                    if (playerIsAlreadyExists)
+                    {
+                        throw new ApplicationException(PlayerExceptionCodes.AlreadyExist);
+                    }
+
+                    if (numberIsAlreadyInUse)
+                    {
+                        throw new ApplicationException(PlayerExceptionCodes.NumberIsBusy);
+                    }
+
+                    var dateOfBirth = player.DateOfBirth ?? throw new Exception(PlayerExceptionCodes.DateOfBirthIsRequired);
+                    var numberInTeam = player.NumberInTeam ?? throw new Exception(PlayerExceptionCodes.NumberInTeamIsRequired);
+                    var newPlayer = new Player
+                    {
+                        FirstName = player.FirstName,
+                        LastName = player.LastName,
+                        DateOfBirth = dateOfBirth,
+                        NumberInTeam = numberInTeam
+                    };
+
+                    players.Add(newPlayer);
+                }
+
+                ageCategory.Teams.Add(team);
+                await _dataContext.SaveChangesAsync(ct);
+
+                city.CanBeRemoved = _cityService.CanBeRemoved(city);
+                await _dataContext.SaveChangesAsync(ct);
+
+                foreach (var player in players)
+                {
+                    team.Players.Add(player);
+                    await _dataContext.SaveChangesAsync(ct);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("An error occured while adding request to tournament", e);
+                command = command with{Error = e.Message};
+                FillSelected();
+                return View("AddRequestToTour", command);
+            }
+
+            return Redirect(command.ReturnUrl);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddOrUpdateTeam([FromForm] AddOrUpdateTeamCommandRecord command, CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+            {
+                FillSelected();
+                return View("AddOrUpdate", command);
+            }
+
+            try
+            {
+                Enum.TryParse<AgeGroup>(command.AgeGroupName, ignoreCase: true, out var ageGroup);
+                var ageCategory = await _dataContext.AgeCategories
+                    .Include(x => x.Teams)
+                    .ThenInclude(x => x.TeamCity)
+                    .Include(x => x.Tournament)
+                    .FirstOrDefaultAsync(x => x.TournamentId == command.TournamentId && x.AgeGroup == ageGroup, ct);
+
+                if (ageCategory == null)
+                {
+                    throw new HttpResponseException(StatusCodes.Status404NotFound, TournamentExceptionCodes.AgeCategoryNotFound);
+                }
+
+                if (ageCategory.Tournament.IsTournamentOver)
+                {
+                    throw new Exception(TournamentExceptionCodes.CanNotBeUpdated);
                 }
 
                 var city = await _dataContext.Cities.FirstOrDefaultAsync(x => x.Id == command.TeamCityId.Value, ct);
@@ -187,7 +313,7 @@ namespace MetroshkaFestival.Web.Controllers
                     {
                         TeamName = command.TeamName,
                         TeamCity = city,
-                        SchoolName = command.SchoolName,
+                        SchoolName = command.SchoolName
                     };
 
                     ageCategory.Teams.Add(team);
@@ -223,7 +349,7 @@ namespace MetroshkaFestival.Web.Controllers
             }
             catch (HttpResponseException e)
             {
-                if (e.Status == StatusCodes.Status404NotFound)
+                if (e.Status is StatusCodes.Status404NotFound or StatusCodes.Status412PreconditionFailed)
                 {
                     throw;
                 }
@@ -233,7 +359,7 @@ namespace MetroshkaFestival.Web.Controllers
                 Log.Error("An error occured while adding team", e);
                 ModelState.AddModelError("AddTeam", e.Message);
                 FillSelected();
-                return View("Add", command);
+                return View("AddOrUpdate", command);
             }
 
             return RedirectPermanent(command.ReturnUrl);
@@ -242,7 +368,17 @@ namespace MetroshkaFestival.Web.Controllers
         [HttpGet]
         public async Task<ActionResult> UpdateTeamStatus(int teamId, string returnUrl)
         {
-            var team = await _dataContext.Teams.Include(x => x.Players).FirstOrDefaultAsync(x => x.Id == teamId);
+            var team = await _dataContext.Teams
+                .Include(x => x.Players)
+                .Include(x => x.AgeCategory)
+                .ThenInclude(x => x.Tournament)
+                .FirstOrDefaultAsync(x => x.Id == teamId);
+
+            if (team.AgeCategory.Tournament.IsTournamentOver)
+            {
+                throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TournamentExceptionCodes.CanNotBeUpdated);
+            }
+
             switch (team.Players.Count)
             {
                 case < 12 when team.TeamStatus != TeamStatus.Published:
@@ -262,7 +398,14 @@ namespace MetroshkaFestival.Web.Controllers
             var team = await _dataContext.Teams
                 .Include(x => x.Players)
                 .Include(x => x.TeamCity)
+                .Include(x => x.AgeCategory)
+                .ThenInclude(x => x.Tournament)
                 .FirstOrDefaultAsync(x => x.Id == teamId);
+
+            if (team.AgeCategory.Tournament.IsTournamentOver)
+            {
+                throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TournamentExceptionCodes.CanNotBeUpdated);
+            }
 
             if (team == null)
             {

@@ -1,6 +1,6 @@
 ﻿@model MetroshkaFestival.Application.Commands.Records.Tournaments.AddTournamentCommandRecord
 @{
-    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Администрирование приложения: Добавление турнира";
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Добавление турнира";
     ViewData["Controller"] = "Tournament";
     ViewBag.Tab = "tab0";
     ViewBag.TabProfile = "tab0";
@@ -33,6 +33,14 @@
         <div class="col-sm-6">
             @Html.DropDownListFor(x => x.CityId, ViewBag.Cities as IEnumerable<SelectListItem>, new {@class = "form-control border-violet"})
             <span class="invalid-feedback d-none" asp-validation-for="CityId" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="IsSetOpenUntilDate" class="input-group-text col-sm-3">Дата завершения набора</label>
+        <div class="col-sm-6">
+            <input asp-for="IsSetOpenUntilDate" class="form-control border-violet" type="datetime-local">
+            <span class="invalid-feedback d-none" asp-validation-for="IsSetOpenUntilDate" aria-required="true"></span>
         </div>
     </div>
 

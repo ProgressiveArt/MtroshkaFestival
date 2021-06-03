@@ -12,6 +12,14 @@ namespace MetroshkaFestival.Data.EntityConfiguration
                 .IsRequired()
                 .HasDefaultValue(true);
 
+            entity.Property(x => x.IsHiddenFromPublic)
+                .IsRequired()
+                .HasDefaultValue(true);
+
+            entity.Property(x => x.IsTournamentOver)
+                .IsRequired()
+                .HasDefaultValue(false);
+
             entity.Property(x => x.Type)
                 .IsRequired()
                 .HasDefaultValue(TournamentType.Default);

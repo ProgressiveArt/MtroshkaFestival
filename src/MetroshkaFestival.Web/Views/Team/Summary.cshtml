@@ -39,7 +39,7 @@
                 <dt class="col-sm-3">Всего игроков: </dt>
                 <dd class="col-sm-9">@Model?.CountMembers</dd>
 
-                @if (isAuthenticated)
+                @if (isAuthenticated && !Model.TournamentIsOver)
                 {
                     <div class="dropdown-divider"></div>
                     <dt class="text-center">Действия</dt>
@@ -75,7 +75,7 @@
                             }
                             else
                             {
-                                <h3>Команда уже опубликована</h3>
+                                <h3>Команда опубликована</h3>
                             }
                         </div>
                     </dt>

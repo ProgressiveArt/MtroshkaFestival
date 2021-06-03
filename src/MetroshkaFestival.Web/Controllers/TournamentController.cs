@@ -55,6 +55,11 @@ namespace MetroshkaFestival.Web.Controllers
                     .Include(x => x.AgeCategories)
                     .ThenInclude(x => x.Teams);
 
+                if (!(User?.Identity?.IsAuthenticated ?? true))
+                {
+                    tournamentsQuery = tournamentsQuery.Where(x => x.IsHiddenFromPublic == false);
+                }
+
                 if (query.Filter != null)
                 {
                     tournamentsQuery = query.Filter.Apply(tournamentsQuery);
@@ -74,8 +79,11 @@ namespace MetroshkaFestival.Web.Controllers
                     Id = x.Id,
                     Name = x.Name,
                     YearOfTour = x.YearOfTour,
+                    CountRequests = x.AgeCategories.SelectMany(x => x.Teams.Where(t => t.TeamStatus == TeamStatus.AwaitConfirmation)).Count(),
                     City = x.City,
                     CanBeRemoved = x.AgeCategories.Any(c => c.Teams.Count == 0),
+                    IsSetOpenUntilDate = x.IsSetOpenUntilDate,
+                    IsTournamentOver = x.IsTournamentOver
                 }).ToArray();
 
                 query.Page.NumPage = Math.Min(query.Page.NumPage,
@@ -107,9 +115,9 @@ namespace MetroshkaFestival.Web.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult> TournamentSummary(GetTournamentSummaryQueryModel query)
+        public ActionResult TournamentSummary(GetTournamentSummaryQueryModel query)
         {
-            var tournament = await _dataContext.Tournaments
+            var tournament = _dataContext.Tournaments
                 .Include(x => x.City)
                 .Include(x => x.AgeCategories)
                 .ThenInclude(x => x.Teams)
@@ -117,7 +125,7 @@ namespace MetroshkaFestival.Web.Controllers
                 .Include(x => x.AgeCategories)
                 .ThenInclude(x => x.Teams)
                 .ThenInclude(x => x.Players)
-                .FirstOrDefaultAsync(x => x.Id == query.TournamentId);
+                .FirstOrDefault(x => x.Id == query.TournamentId);
 
             if (tournament == null)
             {
@@ -133,12 +141,15 @@ namespace MetroshkaFestival.Web.Controllers
                 YearOfTour = tournament.YearOfTour,
                 City = tournament.City,
                 Description = tournament.Description,
+                IsSetOpenUntilDate = tournament.IsSetOpenUntilDate,
+                IsTournamentOver = tournament.IsTournamentOver,
+                IsHiddenFromPublic = tournament.IsHiddenFromPublic,
                 ReturnUrl = query.ReturnUrl
             };
 
             try
             {
-                var teams = tournament.AgeCategories.SelectMany(x => x.Teams.Where(t => t.TeamStatus == TeamStatus.Published)).ToArray();
+                var teams = tournament.AgeCategories.SelectMany(x => x.Teams).ToArray();
                 if (query.Sort != null)
                 {
                     teams = query.Sort.Apply(teams).ToArray();
@@ -148,7 +159,8 @@ namespace MetroshkaFestival.Web.Controllers
                 tournamentModel.Teams = teams;
             }
             catch (Exception e)
-            {Log.Error("An error occured while getting tournament summary", e);
+            {
+                Log.Error("An error occured while getting tournament summary", e);
                 tournamentModel.Error = e.Message;
                 return View("Summary", tournamentModel);
             }
@@ -164,9 +176,71 @@ namespace MetroshkaFestival.Web.Controllers
             return View("Add", command);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> GetUpdateTournamentPage(UpdateTournamentCommandRecord command)
+        {
+            var tournament = await _dataContext.Tournaments.FirstOrDefaultAsync(x => x.Id == command.TournamentId);
+            if (tournament == null)
+            {
+                throw new HttpResponseException(StatusCodes.Status404NotFound, TournamentExceptionCodes.NotFound);
+            }
+
+            return View("Update", command);
+        }
+
         [HttpPost]
-        public async Task<ActionResult> AddTournament([FromForm] AddTournamentCommandRecord command,
-            CancellationToken ct)
+        public async Task<ActionResult> UpdateTournament([FromForm] UpdateTournamentCommandRecord command, CancellationToken ct)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Update", command);
+            }
+
+            try
+            {
+                var tournament = await _dataContext.Tournaments.FirstOrDefaultAsync(x => x.Id == command.TournamentId, ct);
+                if (tournament == null)
+                {
+                    throw new HttpResponseException(StatusCodes.Status404NotFound, TournamentExceptionCodes.NotFound);
+                }
+
+                if (!tournament.IsTournamentOver)
+                {
+                    if (command.IsSetOpenUntilDate.HasValue)
+                    {
+                        tournament.IsSetOpenUntilDate = command.IsSetOpenUntilDate.Value;
+                    }
+
+                    tournament.IsHiddenFromPublic = command.IsHiddenFromPublic;
+                }
+
+                tournament.IsTournamentOver = command.IsTournamentOver;
+                if (command.IsTournamentOver)
+                {
+                    tournament.IsSetOpenUntilDate = DateTime.UtcNow;
+                }
+
+                await _dataContext.SaveChangesAsync(ct);
+            }
+            catch (HttpResponseException e)
+            {
+                if (e.Status is StatusCodes.Status404NotFound or StatusCodes.Status412PreconditionFailed)
+                {
+                    throw;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error("An error occured while adding tournament", e);
+                ModelState.AddModelError("UpdateTournament", e.Message);
+                return View("Update", command);
+            }
+
+            return RedirectPermanent(command.ReturnUrl);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddTournament([FromForm] AddTournamentCommandRecord command, CancellationToken ct)
         {
             if (!ModelState.IsValid)
             {
@@ -195,6 +269,7 @@ namespace MetroshkaFestival.Web.Controllers
 
                 var yearOfTour = command.YearOfTour ?? throw new ApplicationException(TournamentExceptionCodes.YearOfTourIsRequired);
                 var tournamentType = command.TournamentType ?? throw new ApplicationException(TournamentExceptionCodes.TournamentTypeIsRequired);
+                var isSetOpenUntilDate = command.IsSetOpenUntilDate ?? throw new ApplicationException(TournamentExceptionCodes.IsSetOpenUntilDateIsRequired);
 
                 var tournament = new Tournament
                 {
@@ -202,6 +277,9 @@ namespace MetroshkaFestival.Web.Controllers
                     City = city,
                     YearOfTour = yearOfTour,
                     Description = command.Description,
+                    IsSetOpenUntilDate = isSetOpenUntilDate.ToUniversalTime(),
+                    IsTournamentOver = false,
+                    IsHiddenFromPublic = true
                 };
 
                 await _dataContext.Tournaments.AddAsync(tournament, ct);

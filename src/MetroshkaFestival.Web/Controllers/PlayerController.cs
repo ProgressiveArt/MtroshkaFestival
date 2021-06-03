@@ -32,7 +32,11 @@ namespace MetroshkaFestival.Web.Controllers
         [AllowAnonymous]
         public ActionResult GetPlayerSummaryPage(GetPlayerSummaryQueryModel query)
         {
-            var team = _dataContext.Teams.Include(x => x.Players).FirstOrDefault(x => x.Id == query.TeamId);
+            var team = _dataContext.Teams
+                .Include(x => x.Players)
+                .Include(x => x.AgeCategory)
+                .ThenInclude(x => x.Tournament)
+                .FirstOrDefault(x => x.Id == query.TeamId);
             if (team == null)
             {
                 throw new HttpResponseException(StatusCodes.Status404NotFound, TeamExceptionCodes.NotFound);
@@ -52,7 +56,8 @@ namespace MetroshkaFestival.Web.Controllers
                 LastName = player.LastName,
                 DateOfBirth = player.DateOfBirth,
                 NumberInTeam = player.NumberInTeam,
-                TeamId = player.TeamId
+                TeamId = player.TeamId,
+                TournamentIsOver = team.AgeCategory.Tournament.IsTournamentOver
             };
 
             return View("Summary", playerModel);
@@ -65,10 +70,20 @@ namespace MetroshkaFestival.Web.Controllers
             var command = new AddOrUpdatePlayerCommandRecord(returnUrl, teamId, playerId);
             if (playerId != null)
             {
-                var team = _dataContext.Teams.Include(x => x.Players).FirstOrDefault(x => x.Id == teamId);
+                var team = _dataContext.Teams
+                    .Include(x => x.Players)
+                    .Include(x => x.AgeCategory)
+                    .ThenInclude(x => x.Tournament)
+                    .FirstOrDefault(x => x.Id == teamId);
+
                 if (team == null)
                 {
                     throw new HttpResponseException(StatusCodes.Status404NotFound, TeamExceptionCodes.NotFound);
+                }
+
+                if (team.AgeCategory.Tournament.IsTournamentOver)
+                {
+                    throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TournamentExceptionCodes.CanNotBeUpdated);
                 }
 
                 var player = team.Players.FirstOrDefault(x => x.Id == playerId);
@@ -86,21 +101,23 @@ namespace MetroshkaFestival.Web.Controllers
                 };
             }
 
-            return View("Add", command);
+            return View("AddOrUpdate", command);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddOrUpdatePlayerPage(AddOrUpdatePlayerCommandRecord command, CancellationToken ct)
+        public async Task<ActionResult> AddOrUpdatePlayer(AddOrUpdatePlayerCommandRecord command, CancellationToken ct)
         {
             if (!ModelState.IsValid)
             {
-                return View("Add", command);
+                return View("AddOrUpdate", command);
             }
 
             try
             {
                 var team = await _dataContext.Teams
                     .Include(x => x.Players)
+                    .Include(x => x.AgeCategory)
+                    .ThenInclude(x => x.Tournament)
                     .FirstOrDefaultAsync(x => x.Id == command.TeamId, ct);
 
                 if (team == null)
@@ -108,12 +125,20 @@ namespace MetroshkaFestival.Web.Controllers
                     throw new HttpResponseException(StatusCodes.Status404NotFound, TeamExceptionCodes.NotFound);
                 }
 
+                if (team.AgeCategory.Tournament.IsTournamentOver)
+                {
+                    throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TournamentExceptionCodes.CanNotBeUpdated);
+                }
+
                 var isAlreadyExists = await _dataContext.Players
                     .AnyAsync(x => x.FirstName.ToUpper() == command.FirstName.ToUpper()
                               && x.LastName.ToUpper() == command.LastName.ToUpper()
                               && x.DateOfBirth == command.DateOfBirth, ct);
 
-                var numberIsAlreadyInUse = team.Players.Any(x => x.NumberInTeam == command.NumberInTeam);
+                var numberIsAlreadyInUse = team.Players
+                    .Where(x => x.Id != command.PlayerId)
+                    .Any(x => x.NumberInTeam == command.NumberInTeam);
+
                 if (isAlreadyExists)
                 {
                     throw new ApplicationException(PlayerExceptionCodes.AlreadyExist);
@@ -154,7 +179,7 @@ namespace MetroshkaFestival.Web.Controllers
             }
             catch (HttpResponseException e)
             {
-                if (e.Status == StatusCodes.Status404NotFound)
+                if (e.Status is StatusCodes.Status404NotFound or StatusCodes.Status412PreconditionFailed)
                 {
                     throw;
                 }
@@ -163,7 +188,7 @@ namespace MetroshkaFestival.Web.Controllers
             {
                 Log.Error("An error occured while adding player", e);
                 ModelState.AddModelError("AddPlayer", e.Message);
-                return View("Add", command);
+                return View("AddOrUpdate", command);
             }
 
             return RedirectPermanent(command.ReturnUrl);
@@ -174,11 +199,18 @@ namespace MetroshkaFestival.Web.Controllers
         {
             var team = await _dataContext.Teams
                 .Include(x => x.Players)
+                .Include(x => x.AgeCategory)
+                .ThenInclude(x => x.Tournament)
                 .FirstOrDefaultAsync(x => x.Id == teamId);
 
             if (team == null)
             {
                 throw new HttpResponseException(StatusCodes.Status404NotFound, TeamExceptionCodes.NotFound);
+            }
+
+            if (team.AgeCategory.Tournament.IsTournamentOver)
+            {
+                throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TournamentExceptionCodes.CanNotBeUpdated);
             }
 
             if (team.TeamStatus == TeamStatus.Published)

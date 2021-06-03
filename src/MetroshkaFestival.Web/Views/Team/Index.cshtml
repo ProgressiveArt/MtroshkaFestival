@@ -17,13 +17,22 @@
     <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center" style="transform: rotate(0);">
         <a href="@Model.Query.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться в профиль турнира</a>
     </div>
-    <h3 class="mt-3 col-sm"> Команды | Всего: @Model.Teams.Length</h3>
-    @if (isAuthenticated)
+    <h3 class="mt-3 col-sm"> Команды | Всего: @(isAuthenticated ? Model.Teams.Length : Model.Teams.Count(x => x.TeamStatus == TeamStatus.Published))</h3>
+    @if (isAuthenticated && !Model.TournamentIsOver)
     {
         <div class="mt-3 col-sm-2 d-flex justify-content-center">
             <a asp-controller="Team" asp-action="GetAddOrUpdateTeamPage" class="btn btn-secondary"
                asp-route-returnUrl="@returnUrl" asp-route-tournamentId="@Model.Query.TournamentId" asp-route-ageGroupName="@Model.Query.AgeGroupName">
                 Добавить команду
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="mt-3 col-sm-2 d-flex justify-content-center">
+            <a asp-controller="Team" asp-action="GetAddRequestToTourPage" class="btn btn-success"
+               asp-route-returnUrl="@returnUrl" asp-route-tournamentId="@Model.Query.TournamentId" asp-route-ageGroupName="@Model.Query.AgeGroupName">
+                Оставить заявку на турнир
             </a>
         </div>
     }

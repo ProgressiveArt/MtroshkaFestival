@@ -18,6 +18,7 @@ namespace MetroshkaFestival.Application.Queries.Models.Tournaments
         public GetTournamentSummaryQueryModel Query { get; set; }
         public string ReturnUrl { get; set; }
         public string Description  { get; set; }
+        public bool IsHiddenFromPublic { get; set; }
 
         public ICollection<AgeCategory> AgeCategories { get; set; } = new List<AgeCategory>();
         public ICollection<Team> Teams { get; set; } = new List<Team>();

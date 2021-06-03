@@ -19,6 +19,7 @@ namespace MetroshkaFestival.Application.Queries.Models.Teams
     public class TeamListModel
     {
         public string Error { get; set; }
+        public bool TournamentIsOver { get; set; }
         public GetTeamListQueryModel Query { get; set; }
         public TeamListItemModel[] Teams { get; set; }
     }
@@ -39,6 +40,7 @@ namespace MetroshkaFestival.Application.Queries.Models.Teams
         public string ReturnUrl { get; set; }
         public string TeamName { get; set; }
         public int TournamentId { get; set; }
+        public bool TournamentIsOver { get; set; }
         public string AgeGroupName { get; set; }
         public string TournamentNameAndCategory { get; init; }
         public ICollection<Player> Players { get; set; } = new List<Player>();

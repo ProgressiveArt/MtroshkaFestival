@@ -61,7 +61,7 @@
                     ID
                 </sort>
             </th>
-            <th scope="col" class="table-dark w-auto">
+            <th scope="col" class="table-dark col-sm-4">
                 Турниры(
                 <sort asp-all-route-data="Model.Query.GetAllQueryData()"
                       sort-name="@TournamentSortingEnum.Name" class="link-info">
@@ -76,6 +76,8 @@
                     Год
                 </sort>)
             </th>
+            <th scope="col" class="table-dark w-auto">Статус приёма заявок</th>
+            <th scope="col" class="table-dark w-auto">Статус турнира</th>
             @if (isAuthenticated)
             {
                 <th scope="col" class="table-dark col-sm-4">Действие</th>
@@ -92,9 +94,15 @@
                     <td style="transform: rotate(0);">
                         <a asp-controller="Tournament" asp-action="TournamentSummary" class="stretched-link link-dark"
                            asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", tournamentModel.Id.ToString()}})">
-                            @tournamentModel.Name
+                            @tournamentModel.Name 
+                            @if (isAuthenticated)
+                            {
+                                <span class="badge bg-danger">@tournamentModel.CountRequests</span>
+                            }
                         </a>
                     </td>
+                    <td>@(tournamentModel.IsSetOpenUntilDate > DateTime.Now ? "Открыт до " + tournamentModel.IsSetOpenUntilDate + "(UTC)": "Приём заявок завершен")</td>
+                    <td>@(tournamentModel.IsTournamentOver ? "Турнир завершен" : "Активный")</td>
                     @if (isAuthenticated)
                     {
                         <td class="p-1 text-center">
