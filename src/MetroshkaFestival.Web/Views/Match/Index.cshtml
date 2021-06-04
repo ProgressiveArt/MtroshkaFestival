@@ -97,7 +97,9 @@
                                 <td class="p-1 text-center">@match.MatchFinalResult.AsString(EnumFormat.Description)</td>
                                 @if (isAuthenticated)
                                 {
-                                    <td class="p-1 text-center"><a asp-controller="Match" asp-action="GetUpdateMatchPage" asp-route-matchId="" asp-route-returnUrl="@returnUrl" class="btn btn-success btn-md btn-block">Изменить</a></td>
+                                    <td class="p-1 text-center">
+                                            <a asp-controller="Match" asp-action="GetUpdateMatchPage" asp-route-matchId="@match.MatchId" asp-route-returnUrl="@returnUrl" class="btn btn-success btn-md btn-block" >Изменить</a>
+                                    </td>
                                 }
                             </tr>
                         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MetroshkaFestival.Application.Commands.Records;
+using MetroshkaFestival.Application.Commands.Records.Matches;
 using MetroshkaFestival.Application.Queries.Models.Matches;
 using MetroshkaFestival.Core.Exceptions.Common;
 using MetroshkaFestival.Core.Exceptions.ExceptionCodes;
@@ -100,6 +101,34 @@ namespace MetroshkaFestival.Web.Controllers
             }
 
             return View(result);
+        }
+
+        [HttpGet]
+        public IActionResult GetUpdateMatchPage(int matchId, string returnUrl)
+        {
+            var match = _dataContext.Matches
+                .Include(x => x.FirstTeam)
+                .Include(x => x.SecondTeam)
+                .FirstOrDefault(x => x.Id == matchId);
+
+            if (match == null)
+            {
+                throw new HttpResponseException(StatusCodes.Status404NotFound, MatchExceptionCodes.NotFound);
+            }
+
+            var command = new UpdateMatchCommandRecord(returnUrl, matchId,
+                match.MatchDateTime, match.FirstTeam.TeamName, match.SecondTeam.TeamName,
+                match.FirstTeamGoalsScore, match.FirstTeamPenaltyGoalsScore,
+                match.SecondTeamGoalsScore, match.SecondTeamPenaltyGoalsScore,
+                match.MatchFinalResult);
+
+            return View("Update", command);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateMatch(UpdateMatchCommandRecord command)
+        {
+            throw new NotImplementedException();
         }
 
         private void AddMatchStage([FromForm] AddMatchStageCommandRecord command)

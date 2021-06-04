@@ -1,0 +1,89 @@
+﻿@using EnumsNET
+@model MetroshkaFestival.Application.Commands.Records.Matches.UpdateMatchCommandRecord
+@{
+    ViewData["Title"] = "Фестиваль \"МЕТРОШКА\" - Изменение матча";
+    ViewData["Controller"] = "Match";
+}
+
+<div class="text-center p-3 row">
+    <span class="h3">Изменение матча</span>
+</div>
+
+<form asp-action="UpdateMatch" method="post" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2 justify-content-center" enctype="multipart/form-data">
+    <input data-val="true" asp-for="ReturnUrl" type="hidden" value="@Model?.ReturnUrl"/>
+    <input data-val="true" asp-for="MatchId" type="hidden" value="@Model?.MatchId"/>
+    <input data-val="true" asp-for="MatchDateTime" type="hidden" value="@Model?.MatchDateTime"/>
+    <input data-val="true" asp-for="FirstTeamName" type="hidden" value="@Model?.FirstTeamName"/>
+    <input data-val="true" asp-for="SecondTeamName" type="hidden" value="@Model?.SecondTeamName"/>
+    <input data-val="true" asp-for="MatchFinalResult" type="hidden" value="@Model?.MatchFinalResult"/>
+
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label class="input-group-text col-sm-4">Время проведения матча</label>
+        <div class="col-sm-4">
+            <span class="form-control border-violet disabled" disabled>@Model.MatchDateTime.ToLongDateString()</span>
+        </div>
+    </div>
+    
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label class="input-group-text col-sm-4">Команды-соперники</label>
+        <div class="col-sm-4">
+            <span class="form-control border-violet disabled" disabled>@Model.FirstTeamName - @Model.SecondTeamName</span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="FirstTeamGoalsScore" class="input-group-text col-sm-8">Кол-во голов, забитых первой командой</label>
+        <div class="col-sm-2">
+            <input asp-for="FirstTeamGoalsScore" class="form-control border-violet">
+            <span class="invalid-feedback d-none" asp-validation-for="FirstTeamGoalsScore" aria-required="true"></span>
+        </div>
+    </div>
+
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="FirstTeamPenaltyGoalsScore" class="input-group-text col-sm-8">Кол-во голов, забитых первой командой во время серии пенальти</label>
+        <div class="col-sm-2">
+            <input asp-for="FirstTeamPenaltyGoalsScore" class="form-control border-violet">
+            <span class="invalid-feedback d-none" asp-validation-for="FirstTeamPenaltyGoalsScore" aria-required="true"></span>
+        </div>
+    </div>
+    
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="SecondTeamGoalsScore" class="input-group-text col-sm-8">Кол-во голов, забитых второй командой</label>
+        <div class="col-sm-2">
+            <input asp-for="SecondTeamGoalsScore" class="form-control border-violet">
+            <span class="invalid-feedback d-none" asp-validation-for="SecondTeamGoalsScore" aria-required="true"></span>
+        </div>
+    </div>
+    
+    <div class="input-group justify-content-center mt-3 mb-3">
+        <label asp-for="SecondTeamPenaltyGoalsScore" class="input-group-text col-sm-8">Кол-во голов, забитых второй командой во время серии пенальти</label>
+        <div class="col-sm-2">
+            <input asp-for="SecondTeamPenaltyGoalsScore" class="form-control border-violet">
+            <span class="invalid-feedback d-none" asp-validation-for="SecondTeamPenaltyGoalsScore" aria-required="true"></span>
+        </div>
+    </div>
+    
+    <div class="input-group justify-content-center mt-3 mb-3">
+            <label class="input-group-text col-sm-4">Технический победитель матча</label>
+            <div class="col-sm-4">
+                <span class="form-control border-violet disabled">@Model.MatchFinalResult.AsString(EnumFormat.Description)</span>
+            </div>
+        </div>
+
+    <div class="form-group row justify-content-center text-center">
+        <span tabindex="0" data-bs-toggle="tooltip" title="Not implemented now" class="col-sm-4 ">
+            <input class="btn btn-success mt-2 disabled" type="submit" value="Применить изменения"/>
+        </span>
+        <div class="form-group row justify-content-center mt-2">
+            <a class="btn btn-danger btn-block col-sm-4 text-center" href="@Model.ReturnUrl">Отменить</a>
+        </div>
+    </div>
+    <div class="row justify-content-sm-center">
+        <div asp-validation-summary="All" class="text-danger row mt-4 w-50"></div>
+    </div>
+</form>
+
+@section Scripts
+{
+    <script src="~/js/checkInvalid.js"></script>
+}
