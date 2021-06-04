@@ -33,7 +33,7 @@
     </div>
 
     <div class="input-group justify-content-center mt-3 mb-3" @(Model.IsTournamentOver ? "hidden disabled" : "")>
-        <label asp-for="IsHiddenFromPublic" class="input-group-text col-sm-3 me-2">Показывать всем?</label>
+        <label asp-for="IsHiddenFromPublic" class="input-group-text col-sm-3 me-2">Скрыть от всех?</label>
         <div class="col-sm-auto">
             <input asp-for="IsHiddenFromPublic" type="checkbox">
             <span class="invalid-feedback d-none" asp-validation-for="IsHiddenFromPublic" aria-required="true"></span>

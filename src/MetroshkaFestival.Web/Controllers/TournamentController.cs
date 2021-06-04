@@ -81,7 +81,7 @@ namespace MetroshkaFestival.Web.Controllers
                     YearOfTour = x.YearOfTour,
                     CountRequests = x.AgeCategories.SelectMany(x => x.Teams.Where(t => t.TeamStatus == TeamStatus.AwaitConfirmation)).Count(),
                     City = x.City,
-                    CanBeRemoved = x.AgeCategories.Any(c => c.Teams.Count == 0),
+                    CanBeRemoved = !x.AgeCategories.SelectMany(c => c.Teams).Any(),
                     IsSetOpenUntilDate = x.IsSetOpenUntilDate,
                     IsTournamentOver = x.IsTournamentOver
                 }).ToArray();
@@ -388,7 +388,7 @@ namespace MetroshkaFestival.Web.Controllers
                 Type = TournamentType.Default,
                 City = city,
                 YearOfTour = testTournamentYear,
-                IsSetOpenUntilDate = DateTime.Now.AddDays(7),
+                IsSetOpenUntilDate = new DateTime(testTournamentYear, DateTime.Now.Month, DateTime.Now.AddDays(7).Day, 20, 0, 0),
                 IsTournamentOver = false,
                 IsHiddenFromPublic = false,
                 CanBeRemoved = false

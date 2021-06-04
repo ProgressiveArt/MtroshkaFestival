@@ -63,6 +63,10 @@
                         <th scope="col" class="table-dark w-auto">Счёт матча</th>
                         <th scope="col" class="table-dark w-auto">Счёт по пенальти</th>
                         <th scope="col" class="table-dark w-auto">Победитель</th>
+                        @if (isAuthenticated)
+                        {
+                            <th scope="col" class="table-dark w-auto">Действие</th>
+                        }
                     </tr>
                     </thead>
                     @if (Model.Matches.Any())
@@ -91,6 +95,10 @@
                                 <td class="p-1 text-center">@match.FirstTeamGoalsScore : @match.SecondTeamGoalsScore</td>
                                 <td class="p-1 text-center">@match.FirstTeamPenaltyGoalsScore : @match.SecondTeamPenaltyGoalsScore</td>
                                 <td class="p-1 text-center">@match.MatchFinalResult.AsString(EnumFormat.Description)</td>
+                                @if (isAuthenticated)
+                                {
+                                    <td class="p-1 text-center"><a asp-controller="Match" asp-action="GetUpdateMatchPage" asp-route-matchId="" asp-route-returnUrl="@returnUrl" class="btn btn-success btn-md btn-block">Изменить</a></td>
+                                }
                             </tr>
                         }
                         </tbody>
