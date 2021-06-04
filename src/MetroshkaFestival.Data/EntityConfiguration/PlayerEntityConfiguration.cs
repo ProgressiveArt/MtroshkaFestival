@@ -16,9 +16,6 @@ namespace MetroshkaFestival.Data.EntityConfiguration
             entity.Property(x => x.LastName)
                 .IsRequired();
 
-            // entity.Property(x => x.School)
-            //     .IsRequired();
-
             entity.Property("TeamId")
                 .IsRequired();
         }

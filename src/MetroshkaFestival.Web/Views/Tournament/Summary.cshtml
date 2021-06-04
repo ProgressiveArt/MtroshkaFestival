@@ -15,212 +15,212 @@
 }
 
 <div class="container mt-4 col-8 rounded pr-4 pl-4 pb-2" enctype="multipart/form-data">
-    <div class="text-center p-3 row justify-content-between">
-        @if (isAuthenticated)
-        {
-            <span class="h3 col-sm-12 text-center">Профиль турнира</span><br>
-            <div class="col-sm" style="transform: rotate(0);">
-                <a asp-action="GetUpdateTournamentPage" class="btn btn-success stretched-link"
-                   asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()},
-                                           {"isSetOpenUntilDate", Model.IsSetOpenUntilDate.ToString(CultureInfo.InvariantCulture)},
-                                           {"isTournamentOver", Model.IsTournamentOver.ToString()},
-                                           {"isHiddenFromPublic", Model.IsHiddenFromPublic.ToString()}})">
-                    Изменить данные турнира
-                </a>
-            </div>
-            <div class="col-sm" style="transform: rotate(0);">
-                <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться к списку турниров</a>
-            </div>
-        }
-        else
-        {
-            <span class="h3 col-sm-6 text-start">Профиль турнира</span><br>
-            <div class="col-sm-auto" style="transform: rotate(0);">
-                <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться к списку турниров</a>
-            </div>
-        }
-
+<div class="text-center p-3 row justify-content-between">
+    @if (isAuthenticated)
+    {
+        <span class="h3 col-sm-12 text-center">Профиль турнира</span>
+        <br>
+        <div class="col-sm" style="transform: rotate(0);">
+            <a asp-action="GetUpdateTournamentPage" class="btn btn-success stretched-link"
+               asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()}, {"isSetOpenUntilDate", Model.IsSetOpenUntilDate.ToString(CultureInfo.InvariantCulture)}, {"isTournamentOver", Model.IsTournamentOver.ToString()}, {"isHiddenFromPublic", Model.IsHiddenFromPublic.ToString()}})">
+                Изменить данные турнира
+            </a>
         </div>
-    <input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
-
-    <div class="card">
-        <div class="card-header text-center">
-            <h5 class="card-title bg-gradient">@Model?.Name</h5>
+        <div class="col-sm" style="transform: rotate(0);">
+            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться к списку турниров</a>
         </div>
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-4">Тип турнира: </dt>
-                <dd class="col-sm-8">@Model.TournamentType.AsString(EnumFormat.Description)</dd>
+    }
+    else
+    {
+        <span class="h3 col-sm-6 text-start">Профиль турнира</span>
+        <br>
+        <div class="col-sm-auto" style="transform: rotate(0);">
+            <a href="@Model.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться к списку турниров</a>
+        </div>
+    }
 
-                <dt class="col-sm-4">Год проведения: </dt>
-                <dd class="col-sm-8">@Model.YearOfTour</dd>
+</div>
+<input data-val="true" asp-for="Id" type="hidden" value="@Model?.Id"/>
 
-                <dt class="col-sm-4">Город проведения: </dt>
-                <dd class="col-sm-8">@Model.City.Name</dd>
+<div class="card">
+    <div class="card-header text-center">
+        <h5 class="card-title bg-gradient">@Model?.Name</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">Тип турнира: </dt>
+            <dd class="col-sm-8">@Model.TournamentType.AsString(EnumFormat.Description)</dd>
 
-                @if (isAuthenticated)
-                {
-                    <dt class="col-sm-4">Всего команд: </dt>
-                    <dd class="col-sm-8">@Model.Teams.Count</dd>
+            <dt class="col-sm-4">Год проведения: </dt>
+            <dd class="col-sm-8">@Model.YearOfTour</dd>
 
-                    <dt class="col-sm-4">Опубликовано команд: </dt>
-                    <dd class="col-sm-8">@Model.Teams.Count(x => x.TeamStatus == TeamStatus.Published)</dd>
-                }
-                else
-                {
-                    <dt class="col-sm-4">Всего команд: </dt>
-                    <dd class="col-sm-8">@Model.Teams.Count(x => x.TeamStatus == TeamStatus.Published)</dd>
-                }
-                
-                
-                <dt class="col-sm-4">Статус приёма заявок: </dt>
-                <dd class="col-sm-8">@(Model.IsSetOpenUntilDate > DateTime.Now ? "Открыт до " + Model.IsSetOpenUntilDate + "(UTC)": "Приём заявок завершен")</dd>
-                
-                <dt class="col-sm-4">Статус турнира: </dt>
-                <dd class="col-sm-8">@(Model.IsTournamentOver ? "Турнир завершен" : "Активный")</dd>
+            <dt class="col-sm-4">Город проведения: </dt>
+            <dd class="col-sm-8">@Model.City.Name</dd>
 
-                @if (isAuthenticated)
-                {
-                    <dt class="col-sm-4">Статус публичности: </dt>
-                    <dd class="col-sm-8">@(Model.IsHiddenFromPublic ? "Турнир видит только админ" : "Турнир видят все")</dd>
-                }
+            @if (isAuthenticated)
+            {
+                <dt class="col-sm-4">Всего команд: </dt>
+                <dd class="col-sm-8">@Model.Teams.Count</dd>
 
-                <dt class="col-sm-4">Описание турнира: </dt>
-                <dd class="col-sm-8">@Model.Description</dd>
+                <dt class="col-sm-4">Опубликовано команд: </dt>
+                <dd class="col-sm-8">@Model.Teams.Count(x => x.TeamStatus == TeamStatus.Published)</dd>
+            }
+            else
+            {
+                <dt class="col-sm-4">Всего команд: </dt>
+                <dd class="col-sm-8">@Model.Teams.Count(x => x.TeamStatus == TeamStatus.Published)</dd>
+            }
 
-                @if (Model.Error != null)
-                {
-                    <div id="my-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <div class="">
-                            <div class="text-danger m-0 w-50">@Model.Error</div>
-                        </div>
+
+            <dt class="col-sm-4">Статус приёма заявок: </dt>
+            <dd class="col-sm-8">@(Model.IsSetOpenUntilDate > DateTime.Now ? "Открыт до " + Model.IsSetOpenUntilDate + "(UTC)" : "Приём заявок завершен")</dd>
+
+            <dt class="col-sm-4">Статус турнира: </dt>
+            <dd class="col-sm-8">@(Model.IsTournamentOver ? "Турнир завершен" : "Активный")</dd>
+
+            @if (isAuthenticated)
+            {
+                <dt class="col-sm-4">Статус публичности: </dt>
+                <dd class="col-sm-8">@(Model.IsHiddenFromPublic ? "Турнир видит только админ" : "Турнир видят все")</dd>
+            }
+
+            <dt class="col-sm-4">Описание турнира: </dt>
+            <dd class="col-sm-8">@Model.Description</dd>
+
+            @if (Model.Error != null)
+            {
+                <div id="my-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div class="">
+                        <div class="text-danger m-0 w-50">@Model.Error</div>
                     </div>
-                }
-                else
-                {
-                    <div class="dropdown-divider"></div>
-                    <dt class="col-sm-12 text-center">Команды по возрастным категориям</dt>
-                    <dt class="col-sm-12 mt-sm-3 mb-sm-3">
-                        @if (Model.AgeCategories.Any())
-                        {
-                            <div class="text-center row row-cols-sm-2">
-                                @foreach (var ageCategory in Model.AgeCategories)
-                                {
-                                    <div style="transform: rotate(0);">
-                                        <a asp-controller="Team" asp-action="Index" class="btn btn-outline-primary col-sm stretched-link"
-                                           asp-all-route-data="@(new Dictionary<string, string>{
-                                                                   {"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()},
-                                                                   {"TournamentNameAndCategory", $"{Model?.Name} | {ageCategory.Name}"},
-                                                                   {"AgeGroupName", ageCategory.AgeGroup.AsString(EnumFormat.Name)}
-                                                               })">@ageCategory.Name 
-                                            @if (isAuthenticated)
-                                            {
-                                                <span class="badge bg-danger">@Model.Teams.Count(x => x.TeamStatus == TeamStatus.AwaitConfirmation && x.AgeCategory == ageCategory)</span>
-                                            }
-                                        </a>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </dt>
-                    <div class="dropdown-divider"></div>
-                    <dt class="col-sm-12 text-center">Матчи по возрастным категориям</dt>
-                    <dt class="col-sm-12 mt-sm-3 mb-sm-3">
-                        @if (Model.AgeCategories.Any())
-                        {
-                            <div class="text-center row row-cols-sm-2">
-                                @foreach (var ageCategory in Model.AgeCategories)
-                                {
-                                    <div style="transform: rotate(0);">
-                                        <a asp-controller="Team" asp-action="Index" class="btn btn-outline-warning col-sm stretched-link link-dark"
-                                           asp-all-route-data="@(new Dictionary<string, string>{
-                                                                   {"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()},
-                                                                   {"TournamentNameAndCategory", $"{Model?.Name} | {ageCategory.Name}"},
-                                                                   {"AgeGroupName", ageCategory.AgeGroup.AsString(EnumFormat.Name)}
-                                                               })">@ageCategory.Name</a>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </dt>
-                    <div class="dropdown-divider"></div>
-                    <dt class="col-sm-12 mt-sm-3 mb-sm-3">
-                        <nav>
-                            <div class="nav nav-tabs col-sm-12" id="nav-tab" role="tablist">
-                                <button class="nav-link active col-sm" id="nav-teams-tab" data-bs-toggle="tab" data-bs-target="#nav-teams" type="button" role="tab" aria-controls="nav-teams" aria-selected="false">Все команды-участники</button>
-                                <button class="nav-link col-sm" id="nav-matches-tab" data-bs-toggle="tab" data-bs-target="#nav-matches" type="button" role="tab" aria-controls="nav-matches" aria-selected="true">Все матчи</button>
-                            </div>
-                        </nav>
-                        <div class="tab-content" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-teams" role="tabpanel" aria-labelledby="nav-teams-tab">
-                                <div class="text-center d-flex justify-content-center">
-                                    <table class="table table-hover">
-                                        <thead>
-                                        <tr>
+                </div>
+            }
+            else
+            {
+                <div class="dropdown-divider"></div>
+                <dt class="col-sm-12 text-center">Команды по возрастным категориям</dt>
+                <dt class="col-sm-12 mt-sm-3 mb-sm-3">
+                    @if (Model.AgeCategories.Any())
+                    {
+                        <div class="text-center row row-cols-sm-2">
+                            @foreach (var ageCategory in Model.AgeCategories)
+                            {
+                                <div style="transform: rotate(0);">
+                                    <a asp-controller="Team" asp-action="Index" class="btn btn-outline-primary col-sm stretched-link"
+                                       asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()}, {"TournamentNameAndCategory", $"{Model?.Name} | {ageCategory.Name}"}, {"AgeGroupName", ageCategory.AgeGroup.AsString(EnumFormat.Name)}})">
+                                        @ageCategory.Name
+                                        @if (isAuthenticated)
+                                        {
+                                            <span class="badge bg-danger">@Model.Teams.Count(x => x.TeamStatus == TeamStatus.AwaitConfirmation && x.AgeCategory == ageCategory)</span>
+                                        }
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    }
+                </dt>
+                <div class="dropdown-divider"></div>
+                <dt class="col-sm-12 text-center">Матчи по возрастным категориям</dt>
+                <dt class="col-sm-12 mt-sm-3 mb-sm-3">
+                    @if (Model.AgeCategories.Any())
+                    {
+                        <div class="text-center row row-cols-sm-2">
+                            @foreach (var ageCategory in Model.AgeCategories)
+                            {
+                                <div style="transform: rotate(0);">
+                                    <a asp-controller="Match" asp-action="Index" class="btn btn-outline-warning col-sm stretched-link link-dark"
+                                       asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Id.ToString()}, {"TournamentNameAndCategory", $"{Model?.Name} | {ageCategory.Name}"}, {"AgeGroupName", ageCategory.AgeGroup.AsString(EnumFormat.Name)}})">
+                                        @ageCategory.Name
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    }
+                </dt>
+                <div class="dropdown-divider"></div>
+                <dt class="col-sm-12 mt-sm-3 mb-sm-3">
+                    <nav>
+                        <div class="nav nav-tabs col-sm-12" id="nav-tab" role="tablist">
+                            <button class="nav-link active col-sm" id="nav-teams-tab" data-bs-toggle="tab" data-bs-target="#nav-teams" type="button" role="tab" aria-controls="nav-teams" aria-selected="false">Все команды-участники</button>
+                            <button class="nav-link col-sm" id="nav-matches-tab" data-bs-toggle="tab" data-bs-target="#nav-matches" type="button" role="tab" aria-controls="nav-matches" aria-selected="true">Все матчи</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-teams" role="tabpanel" aria-labelledby="nav-teams-tab">
+                            <div class="text-center d-flex justify-content-center">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        @if (isAuthenticated)
+                                        {
                                             <th scope="col" class="table-dark w-auto">
                                                 <sort asp-all-route-data="Model.Query.GetAllQueryData()"
                                                       sort-name="@TournamentSummaryTeamSortingEnum.Id" class="link-info">
                                                     ID
                                                 </sort>
                                             </th>
-                                            <th scope="col" class="table-dark w-auto">
-                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
-                                                      sort-name="@TournamentSummaryTeamSortingEnum.Name" class="link-info">
-                                                    Полное названиие
-                                                </sort>
-                                                (
-                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
-                                                      sort-name="@TournamentSummaryTeamSortingEnum.TeamName" class="link-info">
-                                                    Команда,
-                                                </sort>
-                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
-                                                      sort-name="@TournamentSummaryTeamSortingEnum.SchoolName" class="link-info">
-                                                    Школа
-                                                </sort>)
-                                            </th>
-                                            <th scope="col" class="table-dark w-auto">
-                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
-                                                      sort-name="@TournamentSummaryTeamSortingEnum.City" class="link-info">
-                                                    Город команды
-                                                </sort>
-                                            </th>
-                                            <th scope="col" class="table-dark w-auto">
-                                                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
-                                                      sort-name="@TournamentSummaryTeamSortingEnum.CountMembers" class="link-info">
-                                                    Кол-во игроков
-                                                </sort>
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        @if (Model.Teams.Any())
-                                        {
-                                            <tbody>
-                                            @foreach (var team in isAuthenticated ? Model.Teams : Model.Teams.Where(x => x.TeamStatus == TeamStatus.Published))
-                                            {
-                                                <tr>
-                                                    <th scope="row" class="p-1 text-center">@team.Id</th>
-                                                    <td class="p-1 text-center" style="transform: rotate(0);">
-                                                        <a asp-controller="Team" asp-action="GetTeamSummaryPage" class="stretched-link link-dark" aria-hidden="True"
-                                                           asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Query.TournamentId.ToString()}, {"ageGroupName",team.AgeCategory.AgeGroup.AsString(EnumFormat.Name)}, {"teamId", team.Id.ToString()}, {"tournamentNameAndCategory", $"{Model?.Name} | {team.AgeCategory.Name}"}})">
-                                                            @team.Name
-                                                        </a>
-                                                    </td>
-                                                    <td class="p-1 text-center">@team.TeamCity.Name</td>
-                                                    <td class="p-1 text-center">@team.Players.Count</td>
-                                                </tr>
-                                            }
-                                            </tbody>
                                         }
-                                    </table>
-                                </div>
+                                        <th scope="col" class="table-dark w-auto">
+                                            <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                  sort-name="@TournamentSummaryTeamSortingEnum.Name" class="link-info">
+                                                Полное названиие
+                                            </sort>
+                                            (
+                                            <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                  sort-name="@TournamentSummaryTeamSortingEnum.TeamName" class="link-info">
+                                                Команда,
+                                            </sort>
+                                            <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                  sort-name="@TournamentSummaryTeamSortingEnum.SchoolName" class="link-info">
+                                                Школа
+                                            </sort>)
+                                        </th>
+                                        <th scope="col" class="table-dark w-auto">
+                                            <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                  sort-name="@TournamentSummaryTeamSortingEnum.City" class="link-info">
+                                                Город команды
+                                            </sort>
+                                        </th>
+                                        <th scope="col" class="table-dark w-auto">
+                                            <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                                                  sort-name="@TournamentSummaryTeamSortingEnum.CountMembers" class="link-info">
+                                                Кол-во игроков
+                                            </sort>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    @if (Model.Teams.Any())
+                                    {
+                                        <tbody>
+                                        @foreach (var team in Model.Teams.Where(x => x.TeamStatus == TeamStatus.Published))
+                                        {
+                                            <tr>
+                                                @if (isAuthenticated)
+                                                {
+                                                    <th scope="row" class="p-1 text-center">@team.Id</th>
+                                                }
+                                                <td class="p-1 text-center" style="transform: rotate(0);">
+                                                    <a asp-controller="Team" asp-action="GetTeamSummaryPage" class="stretched-link link-dark" aria-hidden="True"
+                                                       asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Query.TournamentId.ToString()}, {"ageGroupName", team.AgeCategory.AgeGroup.AsString(EnumFormat.Name)}, {"teamId", team.Id.ToString()}, {"tournamentNameAndCategory", $"{Model?.Name} | {team.AgeCategory.Name}"}})">
+                                                        @team.Name
+                                                    </a>
+                                                </td>
+                                                <td class="p-1 text-center">@team.TeamCity.Name</td>
+                                                <td class="p-1 text-center">@team.Players.Count</td>
+                                            </tr>
+                                        }
+                                        </tbody>
+                                    }
+                                </table>
                             </div>
-                            <div class="tab-pane fade" id="nav-matches" role="tabpanel" aria-labelledby="nav-matches-tab">...</div>
                         </div>
-                    </dt>
-                }
-            </dl>
-        </div>
+                        <div class="tab-pane fade" id="nav-matches" role="tabpanel" aria-labelledby="nav-matches-tab">...</div>
+                    </div>
+                </dt>
+            }
+        </dl>
     </div>
+</div>
 </div>
 
 @section Scripts{

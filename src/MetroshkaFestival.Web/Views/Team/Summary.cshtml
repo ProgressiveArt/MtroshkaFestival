@@ -114,7 +114,10 @@
                     <table class="table table-hover">
                         <thead>
                         <tr>
-                            <th scope="col" class="table-dark w-auto">ID</th>
+                            @if (isAuthenticated)
+                            {
+                                <th scope="col" class="table-dark w-auto">ID</th>
+                            }
                             <th scope="col" class="table-dark w-auto">Имя и Фамилия</th>
                             <th scope="col" class="table-dark w-auto">Номер игрока</th>
                             @if (isAuthenticated)
@@ -129,7 +132,10 @@
                             @foreach (var player in Model.Players)
                             {
                                 <tr>
-                                    <th scope="row" class="p-1 text-center col-sm-1">@player.Id</th>
+                                    @if (isAuthenticated)
+                                    {
+                                        <th scope="row" class="p-1 text-center col-sm-1">@player.Id</th>
+                                    }
                                     <td class="p-1 text-center" style="transform: rotate(0);">
                                         <a asp-controller="Player" asp-action="GetPlayerSummaryPage"
                                            asp-all-route-data="@(new Dictionary<string, string> {{"ReturnUrl", returnUrl}, {"TeamId", Model.Id.ToString()}, {"PlayerId", player.Id.ToString()}})"

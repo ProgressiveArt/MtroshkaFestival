@@ -15,7 +15,7 @@ namespace MetroshkaFestival.Data.Entities
         public DateTime MaxBirthDate { get; set; }
 
         public ICollection<Team> Teams { get; set; } = new List<Team>();
-        public ICollection<Group> Groups { get; set; } = new List<Group>();
+        public ICollection<Match> Matches { get; set; } = new List<Match>();
 
         [NotMapped] public string RangeOfBirthYears => $"{MinBirthDate.Year} - {MaxBirthDate.Year} гг. р.";
         [NotMapped] public string Name => $"{AgeGroup.AsString(EnumFormat.Description)}:{RangeOfBirthYears}";

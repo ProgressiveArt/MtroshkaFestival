@@ -21,8 +21,6 @@ namespace MetroshkaFestival.Data.Entities
 
         public ICollection<AgeCategory> AgeCategories { get; set; } = new List<AgeCategory>();
 
-        // public ICollection<Match> Matches { get; set; } = new List<Match>();
-
         [NotMapped] public string Name => $"{(Type == TournamentType.SuperCup ? "(" + Type.AsString(EnumFormat.Description) + ")" : "")}МЕТРОШКА-{YearOfTour}:{City.Name}";
     }
 

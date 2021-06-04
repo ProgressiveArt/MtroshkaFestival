@@ -378,5 +378,81 @@ namespace MetroshkaFestival.Web.Controllers
             });
             ViewBag.Years = yearSelectListItems;
         }
+
+        [HttpPost]
+        public Task BuildTestTournament([FromForm] int testTournamentYear)
+        {
+            var city = _dataContext.Cities.First();
+            var tournament = new Tournament
+            {
+                Type = TournamentType.Default,
+                City = city,
+                YearOfTour = testTournamentYear,
+                IsSetOpenUntilDate = DateTime.Now.AddDays(7),
+                IsTournamentOver = false,
+                IsHiddenFromPublic = false,
+                CanBeRemoved = false
+            };
+
+            _dataContext.Tournaments.Add(tournament);
+            _dataContext.SaveChanges();
+
+            city.CanBeRemoved = _cityService.CanBeRemoved(city);
+            tournament.AgeCategories.Add(new AgeCategory
+            {
+                AgeGroup = AgeGroup.Junior,
+                MinBirthDate = new DateTime(testTournamentYear - 11, 1, 1),
+                MaxBirthDate = new DateTime(testTournamentYear - 10, 12, 31)
+            });
+
+            tournament.AgeCategories.Add(new AgeCategory
+            {
+                AgeGroup = AgeGroup.Senior,
+                MinBirthDate = new DateTime(testTournamentYear - 13, 1, 1),
+                MaxBirthDate = new DateTime(testTournamentYear - 12, 12, 31)
+            });
+             _dataContext.SaveChanges();
+
+            var createdTournament =  _dataContext.Tournaments
+                .Include(x => x.City)
+                .Include(x => x.AgeCategories)
+                .ThenInclude(x => x.Teams)
+                .ThenInclude(x => x.Players)
+                .Include(x => x.AgeCategories)
+                .ThenInclude(x => x.Teams)
+                .ThenInclude(x => x.TeamCity)
+                .First(x => x.Id == tournament.Id);
+
+            var ageCategory = createdTournament.AgeCategories.First();
+            for (var i = 0; i < 32; i++)
+            {
+                var newTeam = new Team
+                {
+                    SchoolName = $"School{i}",
+                    TeamCity = createdTournament.City,
+                    AgeCategory = ageCategory,
+                    TeamStatus = TeamStatus.Published,
+                    TeamName = $"Team{i}"
+                };
+
+                ageCategory.Teams.Add(newTeam);
+                _dataContext.SaveChanges();
+
+                for (var j = 0; j < 15; j++)
+                {
+                    newTeam.Players.Add(new Player
+                    {
+                        FirstName = $"FirstName{i}",
+                        LastName = $"LastName{i}",
+                        DateOfBirth = DateTime.Now,
+                        NumberInTeam = i,
+                        Team = newTeam
+                    });
+                    _dataContext.SaveChanges();
+                }
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

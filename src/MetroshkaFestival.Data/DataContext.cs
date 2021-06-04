@@ -17,11 +17,10 @@ namespace MetroshkaFestival.Data
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<AgeCategory> AgeCategories { get; set; }
-        public DbSet<Group> Groups { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<Player> Players { get; set; }
         public DbSet<File> Files { get; set; }
-        // public DbSet<Match> Matches { get; set; }
+        public DbSet<Match> Matches { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

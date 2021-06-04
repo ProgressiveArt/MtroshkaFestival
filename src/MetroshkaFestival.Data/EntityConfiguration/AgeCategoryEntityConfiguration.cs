@@ -15,6 +15,12 @@ namespace MetroshkaFestival.Data.EntityConfiguration
                 .WithOne(x => x.AgeCategory)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity
+                .HasMany(e => e.Matches)
+                .WithOne(x => x.AgeCategory)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

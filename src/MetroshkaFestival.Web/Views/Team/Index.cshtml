@@ -43,12 +43,15 @@
     <table class="table table-hover">
         <thead>
         <tr>
-            <th scope="col" class="table-dark w-auto">
-                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
-                      sort-name="@TeamSortingEnum.Id" class="link-info">
-                    ID
-                </sort>
-            </th>
+            @if (isAuthenticated)
+            {
+                <th scope="col" class="table-dark w-auto">
+                    <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                          sort-name="@TeamSortingEnum.Id" class="link-info">
+                        ID
+                    </sort>
+                </th>
+            }
             <th scope="col" class="table-dark w-auto">
                 <sort asp-all-route-data="Model.Query.GetAllQueryData()"
                       sort-name="@TeamSortingEnum.Name" class="link-info">
@@ -93,7 +96,10 @@
             @foreach (var team in isAuthenticated ? Model.Teams : Model.Teams.Where(x => x.TeamStatus == TeamStatus.Published))
             {
                 <tr>
-                    <th scope="row" class="p-1 text-center">@team.Id</th>
+                    @if (isAuthenticated)
+                    {
+                        <th scope="row" class="p-1 text-center">@team.Id</th>
+                    }
                     <td class="p-1 text-center" style="transform: rotate(0);">
                         <a asp-controller="Team" asp-action="GetTeamSummaryPage" class="stretched-link link-dark" aria-hidden="True"
                            asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", Model.Query.TournamentId.ToString()}, {"ageGroupName", Model.Query.AgeGroupName}, {"teamId", team.Id.ToString()}, {"tournamentNameAndCategory", Model.Query.TournamentNameAndCategory}})">

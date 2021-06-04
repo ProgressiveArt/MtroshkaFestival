@@ -55,12 +55,15 @@
     <table class="table table-hover col-sm-auto">
         <thead>
         <tr>
-            <th scope="col" class="table-dark w-auto">
-                <sort asp-all-route-data="Model.Query.GetAllQueryData()"
-                      sort-name="@TournamentSortingEnum.Id" class="link-info">
-                    ID
-                </sort>
-            </th>
+            @if (isAuthenticated)
+            {
+                <th scope="col" class="table-dark w-auto">
+                    <sort asp-all-route-data="Model.Query.GetAllQueryData()"
+                          sort-name="@TournamentSortingEnum.Id" class="link-info">
+                        ID
+                    </sort>
+                </th>
+            }
             <th scope="col" class="table-dark col-sm-4">
                 Турниры(
                 <sort asp-all-route-data="Model.Query.GetAllQueryData()"
@@ -90,18 +93,21 @@
             @foreach (var tournamentModel in Model.Tournaments)
             {
                 <tr>
-                    <th scope="row" class="text-break">@tournamentModel.Id</th>
+                    @if (isAuthenticated)
+                    {
+                        <th scope="row" class="text-break">@tournamentModel.Id</th>
+                    }
                     <td style="transform: rotate(0);">
                         <a asp-controller="Tournament" asp-action="TournamentSummary" class="stretched-link link-dark"
                            asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", returnUrl}, {"tournamentId", tournamentModel.Id.ToString()}})">
-                            @tournamentModel.Name 
+                            @tournamentModel.Name
                             @if (isAuthenticated)
                             {
                                 <span class="badge bg-danger">@tournamentModel.CountRequests</span>
                             }
                         </a>
                     </td>
-                    <td>@(tournamentModel.IsSetOpenUntilDate > DateTime.Now ? "Открыт до " + tournamentModel.IsSetOpenUntilDate + "(UTC)": "Приём заявок завершен")</td>
+                    <td>@(tournamentModel.IsSetOpenUntilDate > DateTime.Now ? "Открыт до " + tournamentModel.IsSetOpenUntilDate + "(UTC)" : "Приём заявок завершен")</td>
                     <td>@(tournamentModel.IsTournamentOver ? "Турнир завершен" : "Активный")</td>
                     @if (isAuthenticated)
                     {

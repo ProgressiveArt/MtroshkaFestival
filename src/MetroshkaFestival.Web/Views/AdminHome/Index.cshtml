@@ -12,13 +12,13 @@
 
     <div class="text-center mt-3">
         <div class="col-sm">
-            <button type="button" class="btn btn-secondary mt-2 w-100" style="transform: rotate(0);">
-                @Html.ActionLink("Города", "Index", "City", new {@class = "stretched-link link-light"})
+            <button type="button" class="btn btn-secondary mt-2 w-100 link-light" style="transform: rotate(0);">
+                <a asp-controller="City" asp-action="Index" class="stretched-link link-light">Города</a>
             </button>
         </div>
         <div class="col-sm">
             <button type="button" class="btn btn-secondary mt-2 w-100" style="transform: rotate(0);">
-                @Html.ActionLink("Турниры", "Index", "Tournament", new {@class = "stretched-link link-light"})
+                <a asp-controller="Tournament" asp-action="Index" class="stretched-link link-light">Турниры</a>
             </button>
         </div>
     </div>
