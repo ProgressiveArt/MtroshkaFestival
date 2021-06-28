@@ -28,7 +28,7 @@ namespace MetroshkaFestival.Data.Entities
     {
         [Description("Победила команда 1")]
         WinFirst = 1,
-        [Description("Поле команда 2")]
+        [Description("Победила команда 2")]
         WinSecond = 2,
         [Description("Ведется определение победителя")]
         Unknown= 3
@@ -64,7 +64,7 @@ namespace MetroshkaFestival.Data.Entities
         StageSeven = 7,
         [Description("Этап 8")]
         StageEight = 8,
-        [Description("Плей-офф(1/8)")]
+        [Description("Плей-офф(1/4)")]
         PlayOffOneEight = 9,
         [Description("Полуфинал")]
         Semifinal = 10,

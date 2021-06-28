@@ -39,7 +39,7 @@
                 <dt class="col-sm-3">Всего игроков: </dt>
                 <dd class="col-sm-9">@Model?.CountMembers</dd>
 
-                @if ((isAuthenticated && !Model.TournamentIsOver) || isAuthenticated)
+                @if (isAuthenticated && !Model.TournamentIsOver)
                 {
                     <div class="dropdown-divider"></div>
                     <dt class="text-center">Действия</dt>
@@ -120,7 +120,7 @@
                             }
                             <th scope="col" class="table-dark w-auto">Имя и Фамилия</th>
                             <th scope="col" class="table-dark w-auto">Номер игрока</th>
-                            @if (isAuthenticated)
+                            @if (isAuthenticated && !Model.TournamentIsOver)
                             {
                                 <th scope="col" class="table-dark col-sm-4">Действие</th>
                             }
@@ -145,7 +145,7 @@
 
                                     </td>
                                     <td class="p-1 text-center col-sm-2">@player.NumberInTeam</td>
-                                    @if (isAuthenticated)
+                                    @if (isAuthenticated && !Model.TournamentIsOver)
                                     {
                                         <td class="p-1 text-center col-sm-2">
                                             @if (!isPublish)

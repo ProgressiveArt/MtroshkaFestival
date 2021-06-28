@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using EnumsNET;
 using MetroshkaFestival.Application.Commands.Records;
 using MetroshkaFestival.Application.Commands.Records.Matches;
 using MetroshkaFestival.Application.Queries.Models.Matches;
@@ -12,6 +14,7 @@ using MetroshkaFestival.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -43,9 +46,14 @@ namespace MetroshkaFestival.Web.Controllers
             {
                 if (query.IsAddMatches)
                 {
+                    if (!query.MatchStartDateTime.HasValue)
+                    {
+                        throw new ApplicationException(MatchExceptionCodes.FirstMatchStartDateTimeIsRequired);
+                    }
+
                     AddMatchStage(new AddMatchStageCommandRecord(query.ReturnUrl, query.TournamentId,
                         query.AgeGroupName,
-                        query.TournamentNameAndCategory));
+                        query.TournamentNameAndCategory, query.MatchStartDateTime.Value));
                 }
 
                 Enum.TryParse<AgeGroup>(query.AgeGroupName, ignoreCase: true, out var ageGroup);
@@ -85,8 +93,10 @@ namespace MetroshkaFestival.Web.Controllers
                 result = new MatchListModel
                 {
                     Query = query,
-                    Matches = matches.OrderBy(x => x.MatchDateTime).ThenBy(x => x.FieldNumber).ToArray(),
-                    TournamentIsOver = ageCategory.Tournament.IsTournamentOver
+                    Matches = matches.OrderBy(x => x.StageNumber).ThenBy(x => x.MatchDateTime).ThenBy(x => x.FieldNumber).ToArray(),
+                    TournamentIsOver = ageCategory.Tournament.IsTournamentOver,
+                    TeamsCount = ageCategory.Teams.Count,
+                    PublishedTeamsCount = ageCategory.Teams.Count(x => x.TeamStatus == TeamStatus.Published)
                 };
             }
             catch (HttpResponseException)
@@ -122,13 +132,51 @@ namespace MetroshkaFestival.Web.Controllers
                 match.SecondTeamGoalsScore, match.SecondTeamPenaltyGoalsScore,
                 match.MatchFinalResult);
 
+            FillSelected();
             return View("Update", command);
         }
 
         [HttpPost]
-        public IActionResult UpdateMatch(UpdateMatchCommandRecord command)
+        public async Task<IActionResult> UpdateMatch(UpdateMatchCommandRecord command)
         {
-            throw new NotImplementedException();
+            var match = await _dataContext.Matches.FirstOrDefaultAsync(x => x.Id == command.MatchId);
+            if (match == null)
+            {
+                throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, MatchExceptionCodes.NotFound);
+            }
+
+            try
+            {
+                match.FirstTeamGoalsScore = command.FirstTeamGoalsScore;
+                match.FirstTeamPenaltyGoalsScore = command.FirstTeamPenaltyGoalsScore;
+                match.SecondTeamGoalsScore = command.SecondTeamGoalsScore;
+                match.SecondTeamPenaltyGoalsScore = command.SecondTeamPenaltyGoalsScore;
+
+                var firstTeamScore = command.FirstTeamGoalsScore + command.FirstTeamPenaltyGoalsScore;
+                var secondTeamScore = command.SecondTeamGoalsScore + command.SecondTeamPenaltyGoalsScore;
+                if (firstTeamScore == 0 && secondTeamScore == 0)
+                {
+                    match.MatchFinalResult = command.MatchFinalResult;
+                }
+                else
+                {
+                    match.MatchFinalResult = firstTeamScore > secondTeamScore
+                        ? MatchFinalResult.WinFirst
+                        : MatchFinalResult.WinSecond;
+                }
+
+                await _dataContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Log.Error("An error occured while update match", e);
+                ModelState.AddModelError("UpdateMatch", e.Message);
+                FillSelected();
+                return View("Update", command);
+            }
+
+            var returnUrl = command.ReturnUrl.Contains("&Query.IsAddMatches") ? command.ReturnUrl.Substring(0, command.ReturnUrl.LastIndexOf("&Query.IsAddMatches")) : command.ReturnUrl;
+            return Redirect(returnUrl);
         }
 
         private void AddMatchStage([FromForm] AddMatchStageCommandRecord command)
@@ -145,6 +193,11 @@ namespace MetroshkaFestival.Web.Controllers
                 throw new HttpResponseException(StatusCodes.Status412PreconditionFailed, TournamentExceptionCodes.AgeCategoryNotFound);
             }
 
+            if (ageCategory.Teams.Where(x => x.TeamStatus == TeamStatus.Published).Count(x => x.TeamStatus == TeamStatus.Published) != 32)
+            {
+                throw new ApplicationException(MatchExceptionCodes.MustBe32Teams);
+            }
+
             if (ageCategory.Matches.Any())
             {
                 if (ageCategory.Matches.Any(x => x.MatchFinalResult == MatchFinalResult.Unknown))
@@ -158,7 +211,7 @@ namespace MetroshkaFestival.Web.Controllers
                     return;
                 }
 
-                var lastMatchDate = ageCategory.Matches.OrderBy(x => x.MatchDateTime).Last().MatchDateTime;
+                var lastMatchDate = ageCategory.Matches.OrderBy(x => x.StageNumber).ThenBy(x => x.MatchDateTime).Last().MatchDateTime;
 
                 var teams = ageCategory.Matches.Where(x => x.StageNumber == currentStageNumber).Select(x =>
                 {
@@ -186,13 +239,13 @@ namespace MetroshkaFestival.Web.Controllers
             else
             {
                 var teams = ageCategory.Teams.Where(x => x.TeamStatus == TeamStatus.Published).ToArray();
-                GenerateMatches(ageCategory, teams, StageNumber.StageOne);
+                GenerateMatches(ageCategory, teams, StageNumber.StageOne, command.MatchStartDateTime);
             }
         }
 
-        private void GenerateMatches(AgeCategory ageCategory, Team[] teams, StageNumber stageNumber, DateTime? startDate = null)
+        private void GenerateMatches(AgeCategory ageCategory, Team[] teams, StageNumber stageNumber, DateTime startDate)
         {
-            if (ageCategory.Teams.Count % 2 == 1)
+            if (ageCategory.Teams.Count(x => x.TeamStatus == TeamStatus.Published) % 2 == 1)
             {
                 throw new Exception(MatchExceptionCodes.MustBeEven);
             }
@@ -206,13 +259,7 @@ namespace MetroshkaFestival.Web.Controllers
             };
 
             var random = new Random();
-            var teamsList = teams.ToList();
-            startDate ??= new DateTime(ageCategory.Tournament.IsSetOpenUntilDate.Year,
-                ageCategory.Tournament.IsSetOpenUntilDate.Month,
-                ageCategory.Tournament.IsSetOpenUntilDate.AddDays(1).Day,
-                12, 30, 0);
-
-            var startDateDay = startDate.Value;
+            var teamsList = teams.Where(x => x.TeamStatus == TeamStatus.Published).ToList();
 
             var countPlaysOnField = 1;
             while (teamsList.Count != 0)
@@ -234,7 +281,7 @@ namespace MetroshkaFestival.Web.Controllers
 
                     var match = new Match
                     {
-                        MatchDateTime = startDateDay,
+                        MatchDateTime = startDate,
                         FieldNumber = (FieldNumber) fieldNumber,
                         FirstTeam = firstTeam,
                         SecondTeam = secondTeam,
@@ -249,15 +296,32 @@ namespace MetroshkaFestival.Web.Controllers
 
                 if (countPlaysOnField == 4)
                 {
-                    startDateDay = startDate.Value.AddDays(1);
+                    startDate = startDate.AddDays(1);
                     countPlaysOnField = 0;
                 }
                 else
                 {
-                    startDateDay = startDateDay.AddMinutes(40);
+                    startDate = startDate.AddMinutes(40);
                     countPlaysOnField++;
                 }
             }
+
+            ageCategory.Matches.OrderBy(x => x.StageNumber).ThenBy(x => x.MatchDateTime).Last().MatchFinalResult = MatchFinalResult.Unknown;
+            _dataContext.SaveChanges();
+        }
+
+        private void FillSelected()
+        {
+            var matchResults = Enum.GetValues(typeof(MatchFinalResult))
+                .Cast<int>()
+                .ToArray();
+
+            var tournamentTypes = matchResults.Select(x => new SelectListItem
+            {
+                Value = x.ToString(),
+                Text = $"{((MatchFinalResult) x).AsString(EnumFormat.Description)}"
+            });
+            ViewBag.MatchFinalResults = tournamentTypes;
         }
     }
 }

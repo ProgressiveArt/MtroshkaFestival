@@ -379,18 +379,21 @@ namespace MetroshkaFestival.Web.Controllers
             ViewBag.Years = yearSelectListItems;
         }
 
-        [HttpPost]
-        public Task BuildTestTournament([FromForm] int testTournamentYear)
+        [HttpGet]
+        public IActionResult BuildTestTournament(string returnUrl)
         {
             var city = _dataContext.Cities.First();
+            var random = new Random();
+            var randomYear = random.Next(2022, 2030);
+
             var tournament = new Tournament
             {
                 Type = TournamentType.Default,
                 City = city,
-                YearOfTour = testTournamentYear,
-                IsSetOpenUntilDate = new DateTime(testTournamentYear, DateTime.Now.Month, DateTime.Now.AddDays(7).Day, 20, 0, 0),
+                YearOfTour = randomYear,
+                IsSetOpenUntilDate = new DateTime(randomYear, DateTime.Now.Month, DateTime.Now.AddDays(7).Day, 20, 0, 0),
                 IsTournamentOver = false,
-                IsHiddenFromPublic = false,
+                IsHiddenFromPublic = true,
                 CanBeRemoved = false
             };
 
@@ -401,15 +404,15 @@ namespace MetroshkaFestival.Web.Controllers
             tournament.AgeCategories.Add(new AgeCategory
             {
                 AgeGroup = AgeGroup.Junior,
-                MinBirthDate = new DateTime(testTournamentYear - 11, 1, 1),
-                MaxBirthDate = new DateTime(testTournamentYear - 10, 12, 31)
+                MinBirthDate = new DateTime(randomYear - 11, 1, 1),
+                MaxBirthDate = new DateTime(randomYear - 10, 12, 31)
             });
 
             tournament.AgeCategories.Add(new AgeCategory
             {
                 AgeGroup = AgeGroup.Senior,
-                MinBirthDate = new DateTime(testTournamentYear - 13, 1, 1),
-                MaxBirthDate = new DateTime(testTournamentYear - 12, 12, 31)
+                MinBirthDate = new DateTime(randomYear - 13, 1, 1),
+                MaxBirthDate = new DateTime(randomYear - 12, 12, 31)
             });
              _dataContext.SaveChanges();
 
@@ -424,7 +427,7 @@ namespace MetroshkaFestival.Web.Controllers
                 .First(x => x.Id == tournament.Id);
 
             var ageCategory = createdTournament.AgeCategories.First();
-            for (var i = 0; i < 32; i++)
+            for (var i = 0; i < 31; i++)
             {
                 var newTeam = new Team
                 {
@@ -452,7 +455,7 @@ namespace MetroshkaFestival.Web.Controllers
                 }
             }
 
-            return Task.CompletedTask;
+            return Redirect(returnUrl);
         }
     }
 }

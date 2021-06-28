@@ -11,6 +11,7 @@ namespace MetroshkaFestival.Application.Queries.Models.Matches
         public string AgeGroupName { get; init; }
         public string TournamentNameAndCategory { get; init; }
         public bool IsAddMatches { get; set; } = false;
+        public DateTime? MatchStartDateTime { get; set; }
     }
 
     public class MatchListModel
@@ -19,6 +20,8 @@ namespace MetroshkaFestival.Application.Queries.Models.Matches
         public bool TournamentIsOver { get; set; }
         public GetMatchListQueryModel Query { get; set; }
         public ICollection<MatchListItemModel> Matches { get; set; }
+        public int PublishedTeamsCount { get; set; }
+        public int TeamsCount { get; set; }
     }
 
     public class MatchListItemModel{

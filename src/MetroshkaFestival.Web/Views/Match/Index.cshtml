@@ -1,8 +1,5 @@
 ﻿@using Microsoft.ApplicationInsights.AspNetCore.Extensions
 @using EnumsNET
-@using MetroshkaFestival.Application.Commands.Records
-@using MetroshkaFestival.Application.WebModels.Tournaments.Teams
-@using MetroshkaFestival.Core.Models.Common
 @using MetroshkaFestival.Data.Entities
 @using Microsoft.AspNetCore.Identity
 @model MetroshkaFestival.Application.Queries.Models.Matches.MatchListModel
@@ -19,14 +16,43 @@
     <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center" style="transform: rotate(0);">
         <a href="@Model.Query.ReturnUrl" class="btn btn-outline-dark stretched-link ">Вернуться в профиль турнира</a>
     </div>
-    <h3 class="mt-3 col-sm">Матчи | Всего: @Model.Matches.Count</h3>
+    <h3 class="mt-3 col-sm">Матчи | Всего: @Model.Matches.Count | Команд-участников: @Model.PublishedTeamsCount @(isAuthenticated ? ("| Всего заявлено команд: " + Model.TeamsCount) : "")</h3>
+    <div class="text-center">
     @if ((isAuthenticated && !Model.TournamentIsOver || isAuthenticated) && stageNumbers.LastOrDefault() != StageNumber.Final)
     {
-        <a asp-controller="Match" asp-action="Index" class="link-dark" aria-hidden="True"
-           asp-all-route-data="@(new Dictionary<string, string> {{"returnUrl", Model.Query.ReturnUrl}, {"tournamentId", Model.Query.TournamentId.ToString()}, {"ageGroupName", Model.Query.AgeGroupName}, {"tournamentNameAndCategory", Model.Query.TournamentNameAndCategory}, {"IsAddMatches", true.ToString()}})">
-            Сгенерировать матчи
-        </a>
+        <form asp-action="Index" method="Get" class="container mt-4 col-8 rounded pr-4 pl-4 pb-2 justify-content-center" enctype="multipart/form-data">
+                <input data-val="true" asp-for="Query.ReturnUrl" type="hidden" value="@returnUrl"/>
+                <input data-val="true" asp-for="Query.TournamentId" type="hidden" value="@Model?.Query.TournamentId"/>
+                <input data-val="true" asp-for="Query.AgeGroupName" type="hidden" value="@Model?.Query.AgeGroupName"/>
+                <input data-val="true" asp-for="Query.TournamentNameAndCategory" type="hidden" value="@Model?.Query.TournamentNameAndCategory"/>
+                <input data-val="true" asp-for="Query.IsAddMatches" type="hidden" value="True"/>
+
+                @if (stageNumbers.Length < 1)
+                {
+                    <div class="input-group justify-content-center mt-3 mb-3">
+                        <label asp-for="Query.MatchStartDateTime" class="input-group-text col-sm-4">Дата начала первого матча этапа</label>
+                        <div class="col-sm-4">
+                            <input asp-for="Query.MatchStartDateTime" class="form-control border-violet" type="datetime-local">
+                            <span class="invalid-feedback d-none" asp-validation-for="Query.MatchStartDateTime" aria-required="true"></span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <input data-val="true" asp-for="Query.MatchStartDateTime" type="hidden" value="@Model.Matches.Last().MatchDateTime.AddDays(1)"/>
+                }
+
+                @if (Model.Matches.Any(x => x.MatchFinalResult == MatchFinalResult.Unknown))
+                {
+                    <div class="text-danger m-0 text-center border border-1 border-danger">Завершены еще не все матчи</div>
+                }
+                else
+                {
+                    <input class="btn btn-success mt-2 col-sm-4" type="submit" value="Сгенерировать матчи"/>
+                }
+        </form>
     }
+    </div>
     @if (Model.Error != null)
     {
         <div id="my-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -72,7 +98,7 @@
                     @if (Model.Matches.Any())
                     {
                         <tbody>
-                        @foreach (var match in Model.Matches.Where(x => x.StageNumber == stageNumber))
+                        @foreach (var match in Model.Matches.OrderBy(x => x.StageNumber).Where(x => x.StageNumber == stageNumber))
                         {
                             <tr>
                                 @if (isAuthenticated)
@@ -98,7 +124,7 @@
                                 @if (isAuthenticated)
                                 {
                                     <td class="p-1 text-center">
-                                            <a asp-controller="Match" asp-action="GetUpdateMatchPage" asp-route-matchId="@match.MatchId" asp-route-returnUrl="@returnUrl" class="btn btn-success btn-md btn-block" >Изменить</a>
+                                            <a asp-controller="Match" asp-action="GetUpdateMatchPage" asp-route-matchId="@match.MatchId" asp-route-returnUrl="@returnUrl" class="btn btn-success btn-md btn-block @((int)stageNumber == (int)stageNumbers.Last() ? "" : "disabled")" >Изменить</a>
                                     </td>
                                 }
                             </tr>

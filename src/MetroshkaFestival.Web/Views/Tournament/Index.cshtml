@@ -14,6 +14,10 @@
     <h2 class="mt-3 col-sm">Турниры | Всего: @Model.Tournaments.TotalItemCount</h2>
     @if (isAuthenticated)
     {
+        <div class="mt-3 mb-2 col-sm d-flex justify-content-center">
+            <a asp-controller="Tournament" asp-action="BuildTestTournament" asp-route-returnUrl="@returnUrl" class="btn btn-outline-secondary">Добавить тестовый сгенерированный турнир</a>
+        </div>
+
         <div class="mt-3 mb-2 col-sm-2 d-flex justify-content-center">
             <a asp-controller="Tournament" asp-action="GetAddTournamentPage" asp-route-returnUrl="@returnUrl" class="btn btn-secondary">Добавить турнир</a>
         </div>

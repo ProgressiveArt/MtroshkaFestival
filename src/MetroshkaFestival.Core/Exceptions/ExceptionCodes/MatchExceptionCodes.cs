@@ -7,5 +7,6 @@
         public const string PreviousStageNotComplited = "Предыдущий этап еще не завершен";
         public const string СurrentStageNotComplited = "Текущий этап еще не завершен";
         public const string FirstMatchStartDateTimeIsRequired = "Необходимо указать время начала первого матча";
+        public const string MustBe32Teams = "Должно быть 32 команды";
     }
 }

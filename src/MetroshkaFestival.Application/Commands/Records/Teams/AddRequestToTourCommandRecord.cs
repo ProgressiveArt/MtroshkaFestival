@@ -10,7 +10,6 @@ namespace MetroshkaFestival.Application.Commands.Records.Teams
         [Required(ErrorMessage = TeamExceptionCodes.NameIsRequired)] string TeamName = null,
         [Required(ErrorMessage = CityExceptionCodes.CityNameIsRequired)] int? TeamCityId = null,
         [Required(ErrorMessage = TeamExceptionCodes.SchoolNameIsRequired)] string SchoolName = null,
-        [EmailAddress][Required(ErrorMessage = TeamExceptionCodes.CallBackEmailIsRequired)] string Email = null,
         AddPlayerCommandRecord[] Players = null);
 
     public record AddPlayerCommandRecord([Required(ErrorMessage = PlayerExceptionCodes.FirstNameIsRequired)] string FirstName = null,

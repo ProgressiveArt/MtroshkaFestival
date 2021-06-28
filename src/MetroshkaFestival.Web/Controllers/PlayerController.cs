@@ -37,6 +37,7 @@ namespace MetroshkaFestival.Web.Controllers
                 .Include(x => x.AgeCategory)
                 .ThenInclude(x => x.Tournament)
                 .FirstOrDefault(x => x.Id == query.TeamId);
+
             if (team == null)
             {
                 throw new HttpResponseException(StatusCodes.Status404NotFound, TeamExceptionCodes.NotFound);
@@ -144,13 +145,13 @@ namespace MetroshkaFestival.Web.Controllers
                     throw new ApplicationException(PlayerExceptionCodes.AlreadyExist);
                 }
 
-                if (numberIsAlreadyInUse)
-                {
-                    throw new ApplicationException(PlayerExceptionCodes.NumberIsBusy);
-                }
-
                 if (command.PlayerId == null)
                 {
+                    if (numberIsAlreadyInUse )
+                    {
+                        throw new ApplicationException(PlayerExceptionCodes.NumberIsBusy);
+                    }
+
                     var player = new Player
                     {
                         FirstName = command.FirstName,
@@ -168,6 +169,11 @@ namespace MetroshkaFestival.Web.Controllers
                     if (player == null)
                     {
                         throw new HttpResponseException(StatusCodes.Status404NotFound, PlayerExceptionCodes.NotFound);
+                    }
+
+                    if (numberIsAlreadyInUse && command.NumberInTeam != player.NumberInTeam)
+                    {
+                        throw new ApplicationException(PlayerExceptionCodes.NumberIsBusy);
                     }
 
                     player.FirstName = command.FirstName;
